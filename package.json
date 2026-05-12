@@ -1,0 +1,21 @@
+{
+  "name": "th_laptrinhweb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@ant-design/icons": "^6.2.2",
+    "antd": "^6.3.7",
+    "axios": "^1.16.0",
+    "dayjs": "^1.11.20"
+  }
+}
