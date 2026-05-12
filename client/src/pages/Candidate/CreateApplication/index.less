@@ -1,0 +1,198 @@
+.createPage {
+  width: 100%;
+}
+
+.stepCard {
+  margin-bottom: 24px;
+  border-radius: 24px !important;
+  border: 1px solid #e0e7ff !important;
+  box-shadow: 0 18px 50px rgba(79, 70, 229, 0.08);
+
+  :global(.ant-card-body) {
+    padding: 26px 30px;
+  }
+
+  :global(.ant-steps-item-title) {
+    font-weight: 800;
+  }
+
+  :global(.ant-steps-item-description) {
+    color: #6b7280;
+  }
+
+  :global(.ant-steps-item-process .ant-steps-item-icon) {
+    background: #4f46e5;
+    border-color: #4f46e5;
+  }
+
+  :global(.ant-steps-item-finish .ant-steps-item-icon) {
+    border-color: #818cf8;
+  }
+
+  :global(.ant-steps-item-finish .ant-steps-icon) {
+    color: #4f46e5;
+  }
+}
+
+.formCard {
+  border-radius: 28px !important;
+  border: 1px solid #e0e7ff !important;
+  box-shadow: 0 20px 60px rgba(79, 70, 229, 0.08);
+
+  :global(.ant-card-body) {
+    padding: 34px;
+  }
+
+  :global(.ant-form-item-label > label) {
+    color: #374151;
+    font-weight: 800;
+  }
+
+  :global(.ant-input),
+  :global(.ant-select-selector),
+  :global(.ant-picker),
+  :global(.ant-input-number) {
+    border-radius: 14px !important;
+  }
+
+  :global(.ant-upload-wrapper .ant-upload-drag) {
+    border-radius: 20px;
+    border-color: #c7d2fe;
+    background: #f8faff;
+  }
+}
+
+.stepContent {
+  min-height: 360px;
+}
+
+.blockTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-bottom: 28px;
+
+  > span {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+    background: #eef2ff;
+    color: #4f46e5;
+
+    font-size: 22px;
+  }
+
+  h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #6b7280;
+  }
+}
+
+.reviewBox {
+  display: grid;
+  gap: 16px;
+
+  padding: 24px;
+
+  border-radius: 24px;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+}
+
+.reviewItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  span {
+    color: #6b7280;
+    font-weight: 700;
+  }
+
+  strong {
+    color: #111827;
+    text-align: right;
+  }
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 28px;
+  padding-top: 24px;
+
+  border-top: 1px solid #e5e7eb;
+
+  :global(.ant-btn) {
+    height: 46px;
+    border-radius: 14px;
+    font-weight: 800;
+  }
+
+  :global(.ant-btn-primary) {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border: none;
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.2);
+  }
+}
+
+.profileNotice {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+
+  border-radius: 18px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+
+  color: #374151;
+  font-weight: 600;
+  line-height: 1.7;
+
+  strong {
+    color: #4f46e5;
+  }
+}
+
+@media (max-width: 768px) {
+  .formCard {
+    :global(.ant-card-body) {
+      padding: 22px;
+    }
+  }
+
+  .reviewItem {
+    align-items: flex-start;
+    flex-direction: column;
+
+    strong {
+      text-align: left;
+    }
+  }
+
+  .footerActions {
+    justify-content: stretch;
+
+    :global(.ant-space) {
+      width: 100%;
+    }
+
+    :global(.ant-btn) {
+      width: 100%;
+    }
+  }
+}

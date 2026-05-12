@@ -1,10 +1,36 @@
-.navs {
-  ul {
-    padding: 0;
-    list-style: none;
-    display: flex;
+.layout {
+  min-height: 100vh;
+  background: #f8fbff;
+}
+
+.header {
+  height: 72px;
+  padding: 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fbff;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+
+  a {
+    color: #334155;
+    font-size: 16px;
+    font-weight: 600;
   }
-  li {
-    margin-right: 1em;
-  }
+}
+
+.main {
+  min-height: calc(100vh - 72px);
 }
