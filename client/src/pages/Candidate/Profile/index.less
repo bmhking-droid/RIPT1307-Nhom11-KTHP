@@ -1,0 +1,147 @@
+.profilePage {
+  width: 100%;
+}
+
+.profileCard {
+  border-radius: 28px !important;
+  border: 1px solid #e0e7ff !important;
+
+  box-shadow: 0 18px 50px rgba(79, 70, 229, 0.08);
+
+  overflow: hidden;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  text-align: center;
+
+  h2 {
+    margin: 22px 0 8px;
+
+    color: #111827;
+    font-size: 26px;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0 0 18px;
+
+    color: #6b7280;
+  }
+}
+
+.avatarWrap {
+  position: relative;
+}
+
+.cameraButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+
+  color: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.22);
+}
+
+.infoList {
+  margin-top: 30px;
+  padding-top: 24px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 0;
+
+  color: #374151;
+  font-weight: 600;
+
+  span {
+    overflow-wrap: anywhere;
+  }
+
+  svg {
+    color: #4f46e5;
+  }
+}
+
+.formCard {
+  border-radius: 28px !important;
+  border: 1px solid #e0e7ff !important;
+
+  box-shadow: 0 18px 50px rgba(79, 70, 229, 0.08);
+
+  :global(.ant-card-body) {
+    padding: 34px;
+  }
+
+  :global(.ant-form-item-label > label) {
+    color: #374151;
+    font-weight: 800;
+  }
+
+  :global(.ant-input),
+  :global(.ant-select-selector),
+  :global(.ant-picker) {
+    border-radius: 14px !important;
+  }
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 28px;
+  padding-top: 24px;
+
+  border-top: 1px solid #e5e7eb;
+
+  :global(.ant-btn) {
+    height: 48px;
+    padding: 0 24px;
+
+    border-radius: 14px;
+
+    font-weight: 800;
+  }
+
+  :global(.ant-btn-primary) {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+
+    border: none;
+
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.22);
+  }
+}
+
+@media (max-width: 768px) {
+  .formCard {
+    :global(.ant-card-body) {
+      padding: 22px;
+    }
+  }
+
+  .footerActions {
+    :global(.ant-btn) {
+      width: 100%;
+    }
+  }
+}
