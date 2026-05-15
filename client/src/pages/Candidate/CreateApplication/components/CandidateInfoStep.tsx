@@ -1,7 +1,11 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Col, Form, Input, InputNumber, Row } from 'antd';
 import styles from '../index.less';
-
+import {
+  phoneRules,
+  emailRules,
+  citizenIdRules,
+} from '@/utils/validators';
 const { TextArea } = Input;
 
 export default function CandidateInfoStep() {
@@ -22,26 +26,37 @@ export default function CandidateInfoStep() {
 
       <Row gutter={[20, 12]}>
         <Col xs={24} md={12}>
-          <Form.Item label="Họ và tên" name="fullName">
-            <Input size="large" disabled />
+<Form.Item
+  name="fullName"
+  label="Họ và tên"
+  rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
+>            <Input size="large" disabled />
+          </Form.Item>
+        </Col>
+
+        
+
+        <Col xs={24} md={12}>
+<Form.Item
+  name="email"
+  label="Email"
+  rules={[
+    { required: true, message: 'Vui lòng nhập email' },
+    ...emailRules,
+  ]}
+>            <Input size="large" disabled />
           </Form.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <Form.Item label="Ngày sinh" name="dob">
-            <Input size="large" disabled />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} md={12}>
-          <Form.Item label="Email" name="email">
-            <Input size="large" disabled />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} md={12}>
-          <Form.Item label="Số điện thoại" name="phone">
-            <Input size="large" disabled />
+<Form.Item
+  name="phone"
+  label="Số điện thoại"
+  rules={[
+    { required: true, message: 'Vui lòng nhập số điện thoại' },
+    ...phoneRules,
+  ]}
+>            <Input size="large" disabled />
           </Form.Item>
         </Col>
 
@@ -50,10 +65,27 @@ export default function CandidateInfoStep() {
             <Input size="large" disabled />
           </Form.Item>
         </Col>
+        <Col xs={24} md={12}>
+          <Form.Item label="Ngày sinh" name="dob">
+            <Input size="large" disabled />
+          </Form.Item>
+        </Col>
 
         <Col xs={24} md={12}>
           <Form.Item label="Tỉnh/Thành phố" name="province">
             <Input size="large" disabled />
+          </Form.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+<Form.Item
+  name="citizenId"
+  label="CCCD"
+  rules={[
+    { required: true, message: 'Vui lòng nhập CCCD' },
+    ...citizenIdRules,
+  ]}
+>            <Input  maxLength={12} disabled />
           </Form.Item>
         </Col>
 

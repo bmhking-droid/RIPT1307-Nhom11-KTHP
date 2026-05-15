@@ -1,92 +1,96 @@
-import { UploadOutlined } from '@ant-design/icons';
-import { Col, Form, Input, Row, Upload } from 'antd';
-import styles from '../index.less';
+import React from 'react';
+import { Form, Upload, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import { uploadCandidateFile } from '@/services/candidate';
+import { validateFileBeforeUpload } from '@/utils/validators';
 
-const { TextArea } = Input;
-
-function UploadBox({ label, name, required, message, text }: any) {
-  return (
-    <Col xs={24} md={12}>
-      <Form.Item
-        label={label}
-        name={name}
-        valuePropName="fileList"
-        getValueFromEvent={(e) => e?.fileList}
-        rules={required ? [{ required: true, message }] : []}
-      >
-        <Upload.Dragger
-          beforeUpload={() => false}
-          maxCount={1}
-          accept=".pdf,.jpg,.jpeg,.png"
-        >
-          <p className="ant-upload-drag-icon">
-            <UploadOutlined />
-          </p>
-          <p className="ant-upload-text">{text}</p>
-          <p className="ant-upload-hint">
-            {required ? 'Bắt buộc upload' : 'Không bắt buộc, chỉ upload nếu có'}
-          </p>
-        </Upload.Dragger>
-      </Form.Item>
-    </Col>
-  );
-}
+const { Dragger } = Upload;
 
 export default function DocumentsStep() {
+  const customUpload = async (options: any) => {
+    const { file, onSuccess, onError } = options;
+
+    const validate = validateFileBeforeUpload(file);
+
+    if (!validate.valid) {
+      message.error(validate.message);
+      onError?.(new Error(validate.message));
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await uploadCandidateFile(formData);
+
+      onSuccess?.(res.data);
+      message.success('Upload file thành công');
+    } catch (error) {
+      onError?.(error);
+      message.error('Upload file thất bại');
+    }
+  };
+
   return (
-    <div className={styles.stepContent}>
-      <div className={styles.blockTitle}>
-        <UploadOutlined />
-        <div>
-          <h3>Minh chứng hồ sơ</h3>
-          <p>Upload các giấy tờ cần thiết để cán bộ tuyển sinh xét duyệt.</p>
-        </div>
-      </div>
+    <>
+      <Form.Item
+        name="transcriptFile"
+        label="Học bạ THPT"
+        rules={[{ required: true, message: 'Vui lòng upload học bạ' }]}
+        valuePropName="fileList"
+        getValueFromEvent={(e) => e?.fileList}
+      >
+        <Dragger
+          maxCount={1}
+          customRequest={customUpload}
+          beforeUpload={(file) => {
+            const validate = validateFileBeforeUpload(file);
 
-      <Row gutter={[20, 20]}>
-        <UploadBox
-          label="CCCD/CMND"
-          name="identityFile"
-          required
-          message="Vui lòng upload CCCD/CMND"
-          text="Kéo file hoặc bấm để upload CCCD/CMND"
-        />
+            if (!validate.valid) {
+              message.error(validate.message);
+              return Upload.LIST_IGNORE;
+            }
 
-        <UploadBox
-          label="Học bạ/Bảng điểm"
-          name="transcriptFile"
-          required
-          message="Vui lòng upload học bạ/bảng điểm"
-          text="Kéo file hoặc bấm để upload học bạ/bảng điểm"
-        />
+            return true;
+          }}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p>Bấm hoặc kéo file học bạ vào đây</p>
+          <p>Hỗ trợ PDF, JPG, PNG. Tối đa 5MB.</p>
+        </Dragger>
+      </Form.Item>
 
-        <UploadBox
-          label="Chứng chỉ tiếng Anh nếu có"
-          name="englishCertificateFile"
-          text="IELTS / TOEIC / TOEFL / chứng chỉ khác"
-        />
+      <Form.Item
+        name="citizenIdFile"
+        label="CCCD/CMND"
+        rules={[{ required: true, message: 'Vui lòng upload CCCD/CMND' }]}
+        valuePropName="fileList"
+        getValueFromEvent={(e) => e?.fileList}
+      >
+        <Dragger
+          maxCount={1}
+          customRequest={customUpload}
+          beforeUpload={(file) => {
+            const validate = validateFileBeforeUpload(file);
 
-        <UploadBox
-          label="Giấy chứng nhận nếu có"
-          name="certificateFile"
-          text="Upload giấy chứng nhận"
-        />
+            if (!validate.valid) {
+              message.error(validate.message);
+              return Upload.LIST_IGNORE;
+            }
 
-        <UploadBox
-          label="Giấy ưu tiên nếu có"
-          name="priorityFile"
-          text="Upload giấy ưu tiên"
-        />
-
-        <Col xs={24}>
-          <Form.Item label="Ghi chú bổ sung" name="note">
-            <TextArea
-              rows={4}
-              placeholder="Nhập ghi chú nếu có, ví dụ: giấy ưu tiên, chứng chỉ bổ sung..."
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-    </div>
+            return true;
+          }}
+        >
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p>Bấm hoặc kéo file CCCD/CMND vào đây</p>
+          <p>Hỗ trợ PDF, JPG, PNG. Tối đa 5MB.</p>
+        </Dragger>
+      </Form.Item>
+    </>
   );
 }

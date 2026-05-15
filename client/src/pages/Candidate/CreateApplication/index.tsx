@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, Form, message, Space, Steps } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 
 import PageHeader from '@/components/PageHeader';
+
 import {
   admissionRoundsMock,
   combinationsMock,
   universitiesMock,
 } from '@/mock/admission';
+
 import { candidateProfileMock } from '@/mock/candidate';
+
+import {
+  saveApplicationDraft,
+  getApplicationDraft,
+  clearApplicationDraft,
+} from '@/utils/applicationDraft';
 
 import PreferenceStep from './components/PreferenceStep';
 import CandidateInfoStep from './components/CandidateInfoStep';
@@ -20,9 +28,26 @@ import styles from './index.less';
 
 export default function CreateApplication() {
   const [form] = Form.useForm();
+
   const [current, setCurrent] = useState(0);
 
   const values = form.getFieldsValue(true);
+
+  useEffect(() => {
+    const draft = getApplicationDraft();
+
+    if (draft) {
+      form.setFieldsValue(draft);
+
+      message.info(
+        'Đã khôi phục dữ liệu hồ sơ nháp trước đó.',
+      );
+    }
+  }, [form]);
+
+  const handleValuesChange = (_: any, allValues: any) => {
+    saveApplicationDraft(allValues);
+  };
 
   const steps = [
     { title: 'Nguyện vọng', description: 'Chọn trường/ngành' },
@@ -40,16 +65,22 @@ export default function CreateApplication() {
 
     const found = list.find((item: any) => {
       if (typeof item === 'string') return item === value;
+
       return item.id === value || item.value === value;
     });
 
     if (!found) return value;
 
-    return typeof found === 'string' ? found : found.name || found.label;
+    return typeof found === 'string'
+      ? found
+      : found.name || found.label;
   };
 
   const getUniversityName = () => {
-    return getOptionName(universitiesMock, values.universityId);
+    return getOptionName(
+      universitiesMock,
+      values.universityId,
+    );
   };
 
   const getMajorName = () => {
@@ -57,30 +88,53 @@ export default function CreateApplication() {
       (item: any) => item.id === values.universityId,
     );
 
-    return getOptionName(selectedUniversity?.majors || [], values.major);
+    return getOptionName(
+      selectedUniversity?.majors || [],
+      values.major,
+    );
   };
 
   const getAdmissionRoundName = () => {
-    return getOptionName(admissionRoundsMock, values.admissionRound);
+    return getOptionName(
+      admissionRoundsMock,
+      values.admissionRound,
+    );
   };
 
   const getCombinationName = () => {
-    return getOptionName(combinationsMock, values.combination);
+    return getOptionName(
+      combinationsMock,
+      values.combination,
+    );
   };
 
   const handleNext = async () => {
     const fieldsByStep = [
-      ['universityId', 'major', 'admissionRound', 'combination'],
-      ['score'],
+      [
+        'universityId',
+        'major',
+        'admissionRound',
+        'combination',
+      ],
+      [
+        'fullName',
+        'email',
+        'phone',
+        'citizenId',
+        'address',
+      ],
       ['identityFile', 'transcriptFile'],
       [],
     ];
 
     try {
       await form.validateFields(fieldsByStep[current]);
+
       setCurrent((prev) => prev + 1);
     } catch {
-      message.warning('Vui lòng hoàn thiện thông tin bắt buộc.');
+      message.warning(
+        'Vui lòng hoàn thiện thông tin bắt buộc.',
+      );
     }
   };
 
@@ -96,28 +150,52 @@ export default function CreateApplication() {
 
       const newApplication = {
         id: `HS-${Date.now()}`,
+
         university: getUniversityName(),
         major: getMajorName(),
         admissionRound: getAdmissionRoundName(),
         combination: getCombinationName(),
+
         status: 'Chờ duyệt',
-        updatedAt: new Date().toLocaleDateString('vi-VN'),
+
+        updatedAt: new Date().toLocaleDateString(
+          'vi-VN',
+        ),
+
         score: submitValues.score,
+
+        candidateName: submitValues.fullName,
+        email: submitValues.email,
+        phone: submitValues.phone,
+
+        createdAt: new Date().toISOString(),
       };
 
       const oldApplications = JSON.parse(
-        localStorage.getItem('candidateApplications') || '[]',
+        localStorage.getItem(
+          'candidateApplications',
+        ) || '[]',
       );
 
       localStorage.setItem(
         'candidateApplications',
-        JSON.stringify([newApplication, ...oldApplications]),
+        JSON.stringify([
+          newApplication,
+          ...oldApplications,
+        ]),
       );
 
-      message.success('Nộp hồ sơ thành công. Hồ sơ đang chờ xét duyệt.');
+      clearApplicationDraft();
+
+      message.success(
+        'Nộp hồ sơ thành công. Hồ sơ đang chờ xét duyệt.',
+      );
+
       history.push('/candidate/applications');
     } catch {
-      message.warning('Vui lòng kiểm tra lại thông tin hồ sơ.');
+      message.warning(
+        'Vui lòng kiểm tra lại thông tin hồ sơ.',
+      );
     }
   };
 
@@ -127,7 +205,11 @@ export default function CreateApplication() {
         title="Nộp hồ sơ xét tuyển"
         description="Hoàn thiện từng bước để gửi hồ sơ xét tuyển trực tuyến."
         extra={
-          <Button onClick={() => history.push('/candidate/applications')}>
+          <Button
+            onClick={() =>
+              history.push('/candidate/applications')
+            }
+          >
             Quay lại danh sách
           </Button>
         }
@@ -142,48 +224,80 @@ export default function CreateApplication() {
           form={form}
           layout="vertical"
           requiredMark={false}
+          onValuesChange={handleValuesChange}
           initialValues={{
             combination: 'A00',
-            fullName: candidateProfileMock.fullName,
+
+            fullName:
+              candidateProfileMock.fullName,
+
             email: candidateProfileMock.email,
+
             phone: candidateProfileMock.phone,
-            address: candidateProfileMock.address,
-            gender: candidateProfileMock.gender,
-            province: candidateProfileMock.province,
+
+            address:
+              candidateProfileMock.address,
+
+            gender:
+              candidateProfileMock.gender,
+
+            province:
+              candidateProfileMock.province,
+
             dob: candidateProfileMock.dob,
           }}
         >
-          {current === 0 && <PreferenceStep form={form} />}
+          {current === 0 && (
+            <PreferenceStep form={form} />
+          )}
 
-          {current === 1 && <CandidateInfoStep />}
+          {current === 1 && (
+            <CandidateInfoStep />
+          )}
 
-          {current === 2 && <DocumentsStep />}
+          {current === 2 && (
+            <DocumentsStep />
+          )}
 
           {current === 3 && (
             <ReviewStep
               values={values}
-              getUniversityName={getUniversityName}
+              getUniversityName={
+                getUniversityName
+              }
               getMajorName={getMajorName}
-              getAdmissionRoundName={getAdmissionRoundName}
-              getCombinationName={getCombinationName}
+              getAdmissionRoundName={
+                getAdmissionRoundName
+              }
+              getCombinationName={
+                getCombinationName
+              }
             />
           )}
 
           <div className={styles.footerActions}>
             <Space>
               {current > 0 && (
-                <Button size="large" onClick={handlePrev}>
+                <Button
+                  size="large"
+                  onClick={handlePrev}
+                >
                   Quay lại
                 </Button>
               )}
 
               {current < steps.length - 1 && (
-                <Button type="primary" size="large" onClick={handleNext}>
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleNext}
+                >
                   Tiếp tục
                 </Button>
               )}
 
-              {current === steps.length - 1 && (
+              {current ===
+                steps.length - 1 && (
                 <Button
                   type="primary"
                   size="large"

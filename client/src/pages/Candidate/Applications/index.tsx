@@ -5,6 +5,7 @@ import PageHeader from '@/components/PageHeader';
 import { recentApplications } from '@/mock/admission';
 import styles from './index.less';
 
+
 const statusColor: Record<string, string> = {
   'Chờ duyệt': 'processing',
   'Đã duyệt': 'success',
@@ -75,6 +76,17 @@ export default function CandidateApplications() {
               title: 'Cập nhật',
               dataIndex: 'updatedAt',
             },
+            {
+              title: 'Thao tác',
+              render: (_: any, record: any) => (
+                <Button
+                  type="link"
+                  onClick={() => history.push(`/candidate/applications/${record.id}`)}
+                >
+                  Xem chi tiết
+                </Button>
+              ),
+            }
           ]}
         />
       </Card>
