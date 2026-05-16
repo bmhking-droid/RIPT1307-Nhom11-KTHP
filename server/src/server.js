@@ -1,7 +1,7 @@
-require('dotenv').config();
+require("dotenv").config();
 
-const app = require('./app');
-const { connectDB } = require('./models');
+const app = require("./app");
+const { connectDB } = require("./models");
 
 const PORT = process.env.PORT || 5000;
 
