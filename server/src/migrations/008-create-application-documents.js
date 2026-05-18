@@ -20,12 +20,7 @@ module.exports = {
       },
 
       documentType: {
-        type: Sequelize.ENUM(
-          "CCCD",
-          "HOC_BA",
-          "DIEM_THI",
-          "UU_TIEN"
-        ),
+        type: Sequelize.ENUM("CCCD", "HOC_BA", "DIEM_THI", "UU_TIEN"),
         allowNull: false,
       },
 

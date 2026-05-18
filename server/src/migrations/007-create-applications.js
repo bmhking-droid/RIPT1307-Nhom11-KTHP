@@ -16,7 +16,7 @@ module.exports = {
       },
 
       userId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: "users",
@@ -76,7 +76,7 @@ module.exports = {
           "SUBMITTED",
           "PENDING",
           "APPROVED",
-          "REJECTED"
+          "REJECTED",
         ),
         defaultValue: "DRAFT",
       },

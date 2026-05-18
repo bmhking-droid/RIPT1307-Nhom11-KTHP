@@ -2,9 +2,10 @@ const bcrypt = require("bcryptjs");
 const {
   generateToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } = require("../utils/generateToken");
 const { User, Profile } = require("../models");
-const { errorResponse } = require("../utils/response");
+const { ROLES } = require("../utils/constants");
 const logger = require("../utils/logger");
 
 class AuthService {
@@ -25,7 +26,7 @@ class AuthService {
     const user = await User.create({
       email,
       password: hashedPassword,
-      role: "student",
+      role: ROLES.CANDIDATE,
     });
 
     // Tạo Profile
@@ -74,6 +75,34 @@ class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async refreshToken(token) {
+    try {
+      const decoded = verifyRefreshToken(token);
+
+      const user = await User.findOne({
+        where: { id: decoded.id },
+        include: [{ model: Profile, as: "profile" }],
+      });
+
+      if (!user || !user.isActive) {
+        throw new Error("Invalid refresh token");
+      }
+
+      const payload = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      };
+
+      return {
+        accessToken: generateToken(payload),
+        refreshToken: generateRefreshToken(payload),
+      };
+    } catch (error) {
+      throw new Error("Invalid refresh token");
+    }
   }
 }
 

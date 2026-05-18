@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       userId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
       },
 
@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
           "SUBMITTED",
           "PENDING",
           "APPROVED",
-          "REJECTED"
+          "REJECTED",
         ),
         defaultValue: APPLICATION_STATUS.DRAFT,
       },
@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "applications",
       timestamps: true,
-    }
+    },
   );
 
   Application.associate = (models) => {

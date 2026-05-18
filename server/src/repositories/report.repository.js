@@ -12,10 +12,8 @@ exports.countByStatus = async () => {
   return data;
 };
 
-exports.countByUniversity =
-  async () => {
-    const [data] =
-      await sequelize.query(`
+exports.countByUniversity = async () => {
+  const [data] = await sequelize.query(`
       SELECT 
         u.name,
         COUNT(a.id) as total
@@ -25,8 +23,8 @@ exports.countByUniversity =
       GROUP BY u.name
     `);
 
-    return data;
-  };
+  return data;
+};
 
 exports.countByMajor = async () => {
   const [data] = await sequelize.query(`

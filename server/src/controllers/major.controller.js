@@ -2,9 +2,7 @@ const service = require("../services/major.service");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await service.getAllMajors(
-      req.query
-    );
+    const data = await service.getAllMajors(req.query);
 
     return res.json({
       success: true,
@@ -17,9 +15,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const data = await service.createMajor(
-      req.body
-    );
+    const data = await service.createMajor(req.body);
 
     return res.status(201).json({
       success: true,
@@ -33,10 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const data = await service.updateMajor(
-      req.params.id,
-      req.body
-    );
+    const data = await service.updateMajor(req.params.id, req.body);
 
     return res.json({
       success: true,

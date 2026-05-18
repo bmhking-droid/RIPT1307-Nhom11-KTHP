@@ -7,13 +7,8 @@ exports.getAll = async () => {
 };
 
 exports.create = async (payload) => {
-  if (
-    new Date(payload.startDate) >=
-    new Date(payload.endDate)
-  ) {
-    throw new Error(
-      "Start date must be before end date"
-    );
+  if (new Date(payload.startDate) >= new Date(payload.endDate)) {
+    throw new Error("Start date must be before end date");
   }
 
   return await AdmissionRound.create(payload);

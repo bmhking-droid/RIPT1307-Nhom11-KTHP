@@ -9,12 +9,12 @@ module.exports = {
   allowedMimeTypes: ["image/jpeg", "image/png", "image/jpg", "application/pdf"],
 
   documentFolders: {
-    cccd: "cccd",
-    hoc_ba: "hoc-ba",
-    giay_ut: "uu-tien",
-    anh_3x4: "anh-3x4",
-    diem_thi: "diem-thi",
-    khac: "khac",
+    CCCD: "cccd",
+    HOC_BA: "hoc-ba",
+    UU_TIEN: "uu-tien",
+    ANH_3X4: "anh-3x4",
+    DIEM_THI: "diem-thi",
+    KHAC: "khac",
   },
 
   // Hàm tạo tên file mới

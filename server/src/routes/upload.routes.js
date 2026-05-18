@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const uploadController = require("../controllers/upload.controller");
-const { authenticate } = require("../middlewares/auth.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 const {
   uploadSingle,
   handleUploadError,
@@ -9,7 +9,7 @@ const {
 
 router.post(
   "/document",
-  authenticate,
+  authMiddleware,
   uploadSingle,
   handleUploadError,
   uploadController.uploadDocument,

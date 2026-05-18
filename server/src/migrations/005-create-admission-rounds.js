@@ -24,6 +24,16 @@ module.exports = {
         allowNull: false,
       },
 
+      universityId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        references: {
+          model: "universities",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,

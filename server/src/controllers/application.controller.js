@@ -1,52 +1,66 @@
-const sequelize = require("../configs/database");
+const applicationService = require("../services/application.service");
 
-exports.updateStatus = async (req, res, next) => {
-  const transaction = await sequelize.transaction();
-
+exports.create = async (req, res, next) => {
   try {
-    const { id } = req.params;
-
-    const { status, rejectionReason } = req.body;
-
-    const application = await Application.findByPk(id);
-
-    if (!application) {
-      throw new Error("Application not found");
-    }
-
-    if (
-      application.status === "APPROVED" ||
-      application.status === "REJECTED"
-    ) {
-      throw new Error("Final status cannot be changed");
-    }
-
-    application.status = status;
-
-    if (status === "REJECTED") {
-      application.rejectionReason = rejectionReason;
-    }
-
-    await application.save({ transaction });
-
-    await ApplicationStatusHistory.create(
-      {
-        applicationId: application.id,
-        oldStatus: application.status,
-        newStatus: status,
-        changedBy: req.user.id,
-      },
-      { transaction }
+    const application = await applicationService.createApplication(
+      req.user.id,
+      req.body,
     );
 
-    await transaction.commit();
+    return res.status(201).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMyApplications = async (req, res, next) => {
+  try {
+    const applications = await applicationService.getMyApplications(
+      req.user.id,
+    );
 
     return res.json({
       success: true,
+      data: applications,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDetail = async (req, res, next) => {
+  try {
+    const application = await applicationService.getApplicationDetail(
+      req.params.id,
+      req.user,
+    );
+
+    return res.json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateStatus = async (req, res, next) => {
+  try {
+    const application = await applicationService.updateStatus(
+      req.params.id,
+      req.body,
+      req.user.id,
+    );
+
+    return res.json({
+      success: true,
+      data: application,
       message: "Update status success",
     });
   } catch (error) {
-    await transaction.rollback();
     next(error);
   }
 };

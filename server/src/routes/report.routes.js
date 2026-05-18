@@ -2,28 +2,24 @@ const express = require("express");
 
 const router = express.Router();
 
-const controller = require(
-  "../controllers/report.controller"
-);
+const controller = require("../controllers/report.controller");
 
-const authMiddleware =
-  require("../middlewares/auth.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 
-const roleMiddleware =
-  require("../middlewares/role.middleware");
+const roleMiddleware = require("../middlewares/role.middleware");
 
 router.get(
   "/statistics",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  controller.statistics
+  controller.statistics,
 );
-
-module.exports = router;
 
 router.get(
   "/export-excel",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  controller.exportExcel
+  controller.exportExcel,
 );
+
+module.exports = router;

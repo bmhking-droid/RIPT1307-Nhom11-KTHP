@@ -32,12 +32,17 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "majors",
       timestamps: true,
-    }
+    },
   );
 
   Major.associate = (models) => {
     Major.belongsTo(models.University, {
       foreignKey: "universityId",
+    });
+
+    Major.hasMany(models.AdmissionCombination, {
+      foreignKey: "majorId",
+      onDelete: "CASCADE",
     });
 
     Major.hasMany(models.Application, {

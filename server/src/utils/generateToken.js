@@ -19,8 +19,13 @@ const verifyToken = (token) => {
   return jwt.verify(token, jwtConfig.secret);
 };
 
+const verifyRefreshToken = (token) => {
+  return jwt.verify(token, jwtConfig.refreshSecret);
+};
+
 module.exports = {
   generateToken,
   generateRefreshToken,
   verifyToken,
+  verifyRefreshToken,
 };

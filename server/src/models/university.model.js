@@ -31,12 +31,18 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "universities",
       timestamps: true,
-    }
+    },
   );
 
   University.associate = (models) => {
     University.hasMany(models.Major, {
       foreignKey: "universityId",
+      onDelete: "CASCADE",
+    });
+
+    University.hasMany(models.AdmissionRound, {
+      foreignKey: "universityId",
+      onDelete: "CASCADE",
     });
 
     University.hasMany(models.Application, {

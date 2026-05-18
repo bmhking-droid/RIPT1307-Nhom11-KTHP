@@ -1,6 +1,4 @@
-const service = require(
-  "../services/admissionRound.service"
-);
+const service = require("../services/admissionRound.service");
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -21,8 +19,7 @@ exports.create = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message:
-        "Create admission round success",
+      message: "Create admission round success",
       data,
     });
   } catch (error) {
@@ -32,15 +29,11 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const data = await service.update(
-      req.params.id,
-      req.body
-    );
+    const data = await service.update(req.params.id, req.body);
 
     return res.json({
       success: true,
-      message:
-        "Update admission round success",
+      message: "Update admission round success",
       data,
     });
   } catch (error) {
@@ -54,8 +47,7 @@ exports.delete = async (req, res, next) => {
 
     return res.json({
       success: true,
-      message:
-        "Delete admission round success",
+      message: "Delete admission round success",
     });
   } catch (error) {
     next(error);

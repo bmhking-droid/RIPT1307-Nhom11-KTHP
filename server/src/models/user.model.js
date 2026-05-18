@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM("student", "admin", "super_admin"),
-        defaultValue: "student",
+        type: DataTypes.ENUM("CANDIDATE", "ADMIN", "SUPER_ADMIN"),
+        defaultValue: "CANDIDATE",
       },
       isActive: {
         type: DataTypes.BOOLEAN,

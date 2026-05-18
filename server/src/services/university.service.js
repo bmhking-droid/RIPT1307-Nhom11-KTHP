@@ -1,6 +1,4 @@
-const repository = require(
-  "../repositories/university.repository"
-);
+const repository = require("../repositories/university.repository");
 
 exports.getAllUniversities = async () => {
   return await repository.findAll();
