@@ -14,12 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       documentType: {
-        type: DataTypes.ENUM(
-          "CCCD",
-          "HOC_BA",
-          "DIEM_THI",
-          "UU_TIEN"
-        ),
+        type: DataTypes.ENUM("CCCD", "HOC_BA", "DIEM_THI", "UU_TIEN"),
         allowNull: false,
       },
 
@@ -44,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "application_documents",
       timestamps: true,
-    }
+    },
   );
 
   ApplicationDocument.associate = (models) => {

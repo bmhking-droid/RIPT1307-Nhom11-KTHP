@@ -32,15 +32,11 @@ module.exports = {
           updatedAt: new Date(),
         },
       ],
-      {}
+      {},
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete(
-      "majors",
-      null,
-      {}
-    );
+    await queryInterface.bulkDelete("majors", null, {});
   },
 };

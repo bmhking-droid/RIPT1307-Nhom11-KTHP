@@ -15,6 +15,16 @@ module.exports = {
         unique: true,
       },
 
+      majorId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        references: {
+          model: "majors",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+
       subjects: {
         type: Sequelize.JSON,
         allowNull: false,

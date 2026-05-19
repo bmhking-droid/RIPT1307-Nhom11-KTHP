@@ -7,8 +7,7 @@ exports.getStatistics = async () => {
     GROUP BY status
   `);
 
-  const [applicationsByUniversity] =
-    await sequelize.query(`
+  const [applicationsByUniversity] = await sequelize.query(`
       SELECT u.name, COUNT(a.id) as total
       FROM applications a
       JOIN universities u
@@ -24,35 +23,29 @@ exports.getStatistics = async () => {
 
 const ExcelJS = require("exceljs");
 
-exports.exportExcel =
-  async () => {
-    const workbook =
-      new ExcelJS.Workbook();
+exports.exportExcel = async () => {
+  const workbook = new ExcelJS.Workbook();
 
-    const worksheet =
-      workbook.addWorksheet(
-        "Statistics"
-      );
+  const worksheet = workbook.addWorksheet("Statistics");
 
-    worksheet.columns = [
-      {
-        header: "Status",
-        key: "status",
-        width: 20,
-      },
-      {
-        header: "Total",
-        key: "total",
-        width: 20,
-      },
-    ];
+  worksheet.columns = [
+    {
+      header: "Status",
+      key: "status",
+      width: 20,
+    },
+    {
+      header: "Total",
+      key: "total",
+      width: 20,
+    },
+  ];
 
-    const statistics =
-      await repository.countByStatus();
+  const statistics = await repository.countByStatus();
 
-    statistics.forEach((item) => {
-      worksheet.addRow(item);
-    });
+  statistics.forEach((item) => {
+    worksheet.addRow(item);
+  });
 
-    return workbook;
-  };
+  return workbook;
+};

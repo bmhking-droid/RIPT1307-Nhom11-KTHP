@@ -2,37 +2,23 @@ const express = require("express");
 
 const router = express.Router();
 
-const controller = require(
-  "../controllers/admissionCombination.controller"
-);
+const controller = require("../controllers/admissionCombination.controller");
 
-const authMiddleware =
-  require("../middlewares/auth.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 
-const roleMiddleware =
-  require("../middlewares/role.middleware");
+const roleMiddleware = require("../middlewares/role.middleware");
 
 router.get("/", controller.getAll);
 
-router.post(
-  "/",
-  authMiddleware,
-  roleMiddleware("ADMIN"),
-  controller.create
-);
+router.post("/", authMiddleware, roleMiddleware("ADMIN"), controller.create);
 
-router.put(
-  "/:id",
-  authMiddleware,
-  roleMiddleware("ADMIN"),
-  controller.update
-);
+router.put("/:id", authMiddleware, roleMiddleware("ADMIN"), controller.update);
 
 router.delete(
   "/:id",
   authMiddleware,
   roleMiddleware("ADMIN"),
-  controller.delete
+  controller.delete,
 );
 
 module.exports = router;

@@ -2,7 +2,7 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("application_documents", {
+    await queryInterface.createTable("application_status_history", {
       id: {
         type: Sequelize.BIGINT,
         autoIncrement: true,
@@ -19,32 +19,23 @@ module.exports = {
         onDelete: "CASCADE",
       },
 
-      documentType: {
-        type: Sequelize.ENUM(
-          "CCCD",
-          "HOC_BA",
-          "DIEM_THI",
-          "UU_TIEN"
-        ),
+      oldStatus: {
+        type: Sequelize.STRING(50),
+      },
+
+      newStatus: {
+        type: Sequelize.STRING(50),
         allowNull: false,
       },
 
-      fileName: {
-        type: Sequelize.STRING(255),
+      changedBy: {
+        type: Sequelize.UUID,
         allowNull: false,
-      },
-
-      filePath: {
-        type: Sequelize.STRING(500),
-        allowNull: false,
-      },
-
-      mimeType: {
-        type: Sequelize.STRING(100),
-      },
-
-      fileSize: {
-        type: Sequelize.INTEGER,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
 
       createdAt: {
@@ -60,6 +51,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("application_documents");
+    await queryInterface.dropTable("application_status_history");
   },
 };

@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
 
+      majorId: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+      },
       subjects: {
         type: DataTypes.JSON,
         allowNull: false,
@@ -22,10 +26,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "admission_combinations",
       timestamps: true,
-    }
+    },
   );
 
   AdmissionCombination.associate = (models) => {
+    AdmissionCombination.belongsTo(models.Major, {
+      foreignKey: "majorId",
+    });
+
     AdmissionCombination.hasMany(models.Application, {
       foreignKey: "combinationId",
     });

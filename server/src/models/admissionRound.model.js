@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
 
+      universityId: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+      },
+
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -31,10 +36,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "admission_rounds",
       timestamps: true,
-    }
+    },
   );
 
   AdmissionRound.associate = (models) => {
+    AdmissionRound.belongsTo(models.University, {
+      foreignKey: "universityId",
+    });
+
     AdmissionRound.hasMany(models.Application, {
       foreignKey: "admissionRoundId",
     });

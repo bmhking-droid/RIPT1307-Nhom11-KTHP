@@ -2,8 +2,7 @@ const service = require("../services/university.service");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const data =
-      await service.getAllUniversities();
+    const data = await service.getAllUniversities();
 
     return res.json({
       success: true,
@@ -16,8 +15,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const data =
-      await service.createUniversity(req.body);
+    const data = await service.createUniversity(req.body);
 
     return res.status(201).json({
       success: true,
@@ -31,11 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const data =
-      await service.updateUniversity(
-        req.params.id,
-        req.body
-      );
+    const data = await service.updateUniversity(req.params.id, req.body);
 
     return res.json({
       success: true,

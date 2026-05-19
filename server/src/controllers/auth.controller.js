@@ -38,6 +38,20 @@ class AuthController {
       return errorResponse(res, error.message, 401);
     }
   }
+
+  async refresh(req, res) {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return errorResponse(res, "Refresh token is required", 400);
+      }
+
+      const tokens = await authService.refreshToken(refreshToken);
+      return successResponse(res, tokens, "Token refreshed successfully");
+    } catch (error) {
+      return errorResponse(res, error.message, 401);
+    }
+  }
 }
 
 module.exports = new AuthController();

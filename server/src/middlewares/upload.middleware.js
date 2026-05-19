@@ -5,7 +5,7 @@ const { errorResponse } = require("../utils/response");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const documentType = req.body.documentType || "khac";
+    const documentType = String(req.body.documentType || "KHAC").toUpperCase();
     const folder = uploadConfig.documentFolders[documentType] || "khac";
     const uploadPath = path.join(uploadConfig.baseDir, folder);
 
@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    const documentType = req.body.documentType || "khac";
+    const documentType = String(req.body.documentType || "KHAC").toUpperCase();
     const fileName = uploadConfig.generateFileName(
       file.originalname,
       documentType,
@@ -28,11 +28,23 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (uploadConfig.allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Chỉ hỗ trợ file JPG, PNG, PDF"), false);
+  const originalName = file.originalname || "";
+  const ext = path.extname(originalName).toLowerCase();
+  const basename = path.basename(originalName, ext);
+
+  if (basename.includes(".")) {
+    return cb(new Error("Tên file không hợp lệ"), false);
   }
+
+  if (!uploadConfig.allowedMimeTypes.includes(file.mimetype)) {
+    return cb(new Error("Chỉ hỗ trợ file JPG, PNG, PDF"), false);
+  }
+
+  if (![".jpg", ".jpeg", ".png", ".pdf"].includes(ext)) {
+    return cb(new Error("Định dạng file không được hỗ trợ"), false);
+  }
+
+  cb(null, true);
 };
 
 const upload = multer({

@@ -1,6 +1,4 @@
-const repository = require(
-  "../repositories/major.repository"
-);
+const repository = require("../repositories/major.repository");
 
 const { University } = require("../models");
 
@@ -9,9 +7,7 @@ exports.getAllMajors = async (filters) => {
 };
 
 exports.createMajor = async (payload) => {
-  const university = await University.findByPk(
-    payload.universityId
-  );
+  const university = await University.findByPk(payload.universityId);
 
   if (!university) {
     throw new Error("University not found");

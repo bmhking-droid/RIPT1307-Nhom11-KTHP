@@ -23,14 +23,14 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       changedBy: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
       },
     },
     {
       tableName: "application_status_history",
       timestamps: true,
-    }
+    },
   );
 
   ApplicationStatusHistory.associate = (models) => {

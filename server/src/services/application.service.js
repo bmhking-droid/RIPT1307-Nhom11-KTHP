@@ -1,8 +1,6 @@
 const sequelize = require("../configs/database");
 
-const repository = require(
-  "../repositories/application.repository"
-);
+const repository = require("../repositories/application.repository");
 
 const {
   University,
@@ -14,113 +12,85 @@ const {
   Application,
 } = require("../models");
 
-const generateApplicationCode = require(
-  "../utils/generateApplicationCode"
-);
+const mailService = require("./mail.service");
+const { APPLICATION_STATUS } = require("../utils/constants");
 
-const {
-  APPLICATION_STATUS,
-} = require("../utils/constants");
+const generateApplicationCode = () => {
+  const timestamp = Date.now();
+  const suffix = Math.floor(Math.random() * 9000) + 1000;
+  return `APP-${timestamp}-${suffix}`;
+};
 
-exports.createApplication = async (
-  userId,
-  payload
-) => {
-  const transaction =
-    await sequelize.transaction();
+exports.createApplication = async (userId, payload) => {
+  const transaction = await sequelize.transaction();
 
   try {
-    // Validate university
-    const university =
-      await University.findByPk(
-        payload.universityId
-      );
-
+    const university = await University.findByPk(payload.universityId);
     if (!university) {
-      throw new Error(
-        "University not found"
-      );
+      throw new Error("University not found");
     }
 
-    // Validate major belongs to university
     const major = await Major.findOne({
       where: {
         id: payload.majorId,
-        universityId:
-          payload.universityId,
+        universityId: payload.universityId,
       },
     });
 
     if (!major) {
-      throw new Error(
-        "Major does not belong to university"
-      );
+      throw new Error("Major does not belong to university");
     }
 
-    // Validate round
-    const round =
-      await AdmissionRound.findByPk(
-        payload.admissionRoundId
-      );
-
+    const round = await AdmissionRound.findByPk(payload.admissionRoundId);
     if (!round) {
-      throw new Error(
-        "Admission round not found"
-      );
+      throw new Error("Admission round not found");
     }
 
     const now = new Date();
-
-    if (
-      now < round.startDate ||
-      now > round.endDate
-    ) {
-      throw new Error(
-        "Admission round is closed"
-      );
+    if (now < round.startDate || now > round.endDate) {
+      throw new Error("Admission round is closed");
     }
 
-    // Validate combination
-    const combination =
-      await AdmissionCombination.findByPk(
-        payload.combinationId
-      );
-
+    const combination = await AdmissionCombination.findByPk(
+      payload.combinationId,
+    );
     if (!combination) {
-      throw new Error(
-        "Admission combination not found"
-      );
+      throw new Error("Admission combination not found");
     }
 
-    // Generate code
-    const applicationCode =
-      await generateApplicationCode(
-        Application
-      );
+    const applicationCode = await generateApplicationCode(Application);
 
-    // Create application
-    const application =
-      await repository.create(
-        {
-          ...payload,
-          userId,
-          applicationCode,
-          status:
-            APPLICATION_STATUS.PENDING,
-        },
-        transaction
-      );
+    const application = await repository.create(
+      {
+        ...payload,
+        userId,
+        applicationCode,
+        status: APPLICATION_STATUS.PENDING,
+      },
+      transaction,
+    );
 
-    // Create status history
+    if (Array.isArray(payload.documents) && payload.documents.length) {
+      const documents = payload.documents.map((document) => ({
+        applicationId: application.id,
+        documentType: String(document.documentType).toUpperCase(),
+        fileName: document.fileName,
+        filePath: document.filePath,
+        mimeType: document.mimeType,
+        fileSize: document.fileSize,
+      }));
+
+      await ApplicationDocument.bulkCreate(documents, { transaction });
+    }
+
     await ApplicationStatusHistory.create(
       {
         applicationId: application.id,
         oldStatus: null,
-        newStatus:
-          APPLICATION_STATUS.PENDING,
+        newStatus: APPLICATION_STATUS.PENDING,
         changedBy: userId,
       },
-      { transaction }
+      { transaction },
     );
 
     await transaction.commit();
@@ -128,104 +98,65 @@ exports.createApplication = async (
     return application;
   } catch (error) {
     await transaction.rollback();
-
     throw error;
   }
 };
 
-exports.getMyApplications = async (
-  userId
-) => {
-  return await repository.findByUserId(
-    userId
-  );
+exports.getMyApplications = async (userId) => {
+  return await repository.findByUserId(userId);
 };
 
-exports.getApplicationDetail = async (
-  id,
-  user
-) => {
-  const application =
-    await repository.findById(id);
+exports.getApplicationDetail = async (id, user) => {
+  const application = await repository.findById(id);
 
   if (!application) {
-    throw new Error(
-      "Application not found"
-    );
+    throw new Error("Application not found");
   }
 
-  // Candidate chỉ xem hồ sơ của mình
-  if (
-    user.role === "CANDIDATE" &&
-    application.userId !== user.id
-  ) {
+  if (user.role === "CANDIDATE" && application.userId !== user.id) {
     throw new Error("Access denied");
   }
 
   return application;
 };
 
-exports.updateStatus = async (
-  id,
-  payload,
-  adminId
-) => {
-  const transaction =
-    await sequelize.transaction();
+exports.updateStatus = async (id, payload, adminId) => {
+  const transaction = await sequelize.transaction();
 
   try {
-    const application =
-      await repository.findById(id);
+    const application = await repository.findById(id);
 
     if (!application) {
-      throw new Error(
-        "Application not found"
-      );
+      throw new Error("Application not found");
     }
 
-    // Không cho sửa final status
     if (
-      application.status ===
-        APPLICATION_STATUS.APPROVED ||
-      application.status ===
-        APPLICATION_STATUS.REJECTED
+      application.status === APPLICATION_STATUS.APPROVED ||
+      application.status === APPLICATION_STATUS.REJECTED
     ) {
-      throw new Error(
-        "Cannot change final status"
-      );
+      throw new Error("Cannot change final status");
     }
 
-    // Validate status
     const allowedStatuses = [
       APPLICATION_STATUS.APPROVED,
       APPLICATION_STATUS.REJECTED,
     ];
 
-    if (
-      !allowedStatuses.includes(
-        payload.status
-      )
-    ) {
-      throw new Error(
-        "Invalid status"
-      );
+    if (!allowedStatuses.includes(payload.status)) {
+      throw new Error("Invalid status");
     }
 
-    const oldStatus =
-      application.status;
+    const oldStatus = application.status;
 
     await repository.updateStatus(
       application,
       {
         status: payload.status,
-        rejectionReason:
-          payload.rejectionReason ||
-          null,
+        rejectionReason: payload.rejectionReason || null,
       },
-      transaction
+      transaction,
     );
 
-    // Log history
     await ApplicationStatusHistory.create(
       {
         applicationId: application.id,
@@ -233,29 +164,22 @@ exports.updateStatus = async (
         newStatus: payload.status,
         changedBy: adminId,
       },
-      { transaction }
+      { transaction },
     );
 
     await transaction.commit();
 
+    if (application.user && application.user.email) {
+      await mailService.sendApplicationStatusEmail(
+        application.user.email,
+        payload.status,
+        payload.rejectionReason,
+      );
+    }
+
     return application;
   } catch (error) {
     await transaction.rollback();
-
     throw error;
   }
 };
-
-const {
-  writeLog,
-} = require("../utils/logger");
-
-writeLog(
-  "application.log",
-  `Create application ${application.applicationCode}`
-);
-
-writeLog(
-  "application.log",
-  `Application ${application.applicationCode} updated to ${payload.status}`
-);
