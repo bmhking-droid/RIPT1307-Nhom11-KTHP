@@ -1,7 +1,12 @@
 const { University } = require("../models");
 
-exports.findAll = async () => {
+exports.findAll = async (filters = {}) => {
+  const where = {};
+  if (filters.isActive !== undefined) {
+    where.isActive = filters.isActive === "true" || filters.isActive === true;
+  }
   return await University.findAll({
+    where,
     order: [["createdAt", "DESC"]],
   });
 };

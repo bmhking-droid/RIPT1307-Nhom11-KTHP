@@ -1,3 +1,4 @@
+// Auth service - handles user registration, login, and token refresh
 const bcrypt = require("bcryptjs");
 const {
   generateToken,
@@ -12,24 +13,20 @@ class AuthService {
   async register(data) {
     const { email, password, fullName } = data;
 
-    // Kiểm tra email tồn tại
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       throw new Error("Email đã tồn tại");
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Tạo User
     const user = await User.create({
       email,
       password: hashedPassword,
       role: ROLES.CANDIDATE,
     });
 
-    // Tạo Profile
     await Profile.create({
       userId: user.id,
       fullName,
@@ -46,8 +43,12 @@ class AuthService {
       include: [{ model: Profile, as: "profile" }],
     });
 
-    if (!user || !user.isActive) {
+    if (!user) {
       throw new Error("Thông tin đăng nhập không chính xác");
+    }
+
+    if (user.isActive === false || user.isActive === 0) {
+      throw new Error("Tài khoản của bạn đã bị khóa");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -55,7 +56,6 @@ class AuthService {
       throw new Error("Thông tin đăng nhập không chính xác");
     }
 
-    // Tạo payload
     const payload = {
       id: user.id,
       email: user.email,
@@ -71,6 +71,8 @@ class AuthService {
         email: user.email,
         role: user.role,
         fullName: user.profile?.fullName,
+        // BUG FIX: Return full profile so frontend can cache in LocalStorage
+        profile: user.profile,
       },
       accessToken,
       refreshToken,

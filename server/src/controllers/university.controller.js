@@ -2,7 +2,7 @@ const service = require("../services/university.service");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await service.getAllUniversities();
+    const data = await service.getAllUniversities(req.query);
 
     return res.json({
       success: true,

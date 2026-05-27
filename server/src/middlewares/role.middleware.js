@@ -1,13 +1,14 @@
 const { errorResponse } = require("../utils/response");
-const { ROLES } = require("../utils/constants");
 
 const authorize = (...allowedRoles) => {
+  const roles = [...allowedRoles];
+
   return (req, res, next) => {
     if (!req.user) {
       return errorResponse(res, "Unauthorized", 401);
     }
 
-    if (allowedRoles.includes(req.user.role)) {
+    if (roles.includes(req.user.role)) {
       return next();
     }
 

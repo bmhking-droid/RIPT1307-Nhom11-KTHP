@@ -3,31 +3,30 @@ module.exports = (sequelize, DataTypes) => {
     "AdmissionRound",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
 
       name: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
 
       startDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
 
       endDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
 
-      universityId: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
+      status: {
+        type: DataTypes.ENUM('upcoming', 'ongoing', 'ended'),
+        defaultValue: 'upcoming',
       },
-
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -40,12 +39,8 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   AdmissionRound.associate = (models) => {
-    AdmissionRound.belongsTo(models.University, {
-      foreignKey: "universityId",
-    });
-
     AdmissionRound.hasMany(models.Application, {
-      foreignKey: "admissionRoundId",
+      foreignKey: "roundId",
     });
   };
 

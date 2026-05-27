@@ -1,39 +1,20 @@
-const { AdmissionRound } = require("../models");
+const repository = require("../repositories/admissionRound.repository");
 
-exports.getAll = async () => {
-  return await AdmissionRound.findAll({
-    order: [["createdAt", "DESC"]],
-  });
+exports.getAll = async (filters) => {
+  return await repository.findAll(filters);
 };
 
 exports.create = async (payload) => {
   if (new Date(payload.startDate) >= new Date(payload.endDate)) {
     throw new Error("Start date must be before end date");
   }
-
-  return await AdmissionRound.create(payload);
+  return await repository.create(payload);
 };
 
 exports.update = async (id, payload) => {
-  const round = await AdmissionRound.findByPk(id);
-
-  if (!round) {
-    throw new Error("Admission round not found");
-  }
-
-  await round.update(payload);
-
-  return round;
+  return await repository.update(id, payload);
 };
 
 exports.delete = async (id) => {
-  const round = await AdmissionRound.findByPk(id);
-
-  if (!round) {
-    throw new Error("Admission round not found");
-  }
-
-  await round.destroy();
-
-  return true;
+  return await repository.delete(id);
 };

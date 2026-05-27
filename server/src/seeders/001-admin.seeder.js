@@ -9,7 +9,7 @@ module.exports = {
         id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         email: "admin@admission.edu.vn",
         password: hashedPassword,
-        role: "super_admin",
+        role: "ADMIN",
         isActive: true,
         emailVerified: true,
         createdAt: new Date(),

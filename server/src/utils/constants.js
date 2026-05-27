@@ -1,16 +1,15 @@
 module.exports = {
   ROLES: {
-    CANDIDATE: "CANDIDATE",
+    CANDIDATE: "CANDIDATE", 
     ADMIN: "ADMIN",
-    SUPER_ADMIN: "SUPER_ADMIN",
   },
 
   APPLICATION_STATUS: {
-    DRAFT: "DRAFT",
-    SUBMITTED: "SUBMITTED",
-    PENDING: "PENDING",
-    APPROVED: "APPROVED",
-    REJECTED: "REJECTED",
+    DRAFT: "pending",
+    SUBMITTED: "pending",
+    PENDING: "pending",
+    APPROVED: "approved",
+    REJECTED: "rejected",
   },
 
   DOCUMENT_TYPES: {

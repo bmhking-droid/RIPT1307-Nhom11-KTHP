@@ -12,13 +12,13 @@ const sequelize = new Sequelize(
     port: Number(process.env.DB_PORT) || 3306,
     dialect: "mysql",
     logging: false,
+    define: {
+      underscored: false,
+    }
   },
 );
 
-const db = {
-  sequelize,
-  Sequelize,
-};
+const db = { sequelize, Sequelize };
 
 fs.readdirSync(__dirname)
   .filter((file) => file !== path.basename(__filename) && file.endsWith(".js"))
@@ -42,7 +42,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = {
-  ...db,
-  connectDB,
-};
+module.exports = { ...db, connectDB };

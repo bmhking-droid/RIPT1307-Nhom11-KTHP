@@ -1,7 +1,7 @@
 const repository = require("../repositories/university.repository");
 
-exports.getAllUniversities = async () => {
-  return await repository.findAll();
+exports.getAllUniversities = async (filters) => {
+  return await repository.findAll(filters);
 };
 
 exports.createUniversity = async (payload) => {

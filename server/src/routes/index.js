@@ -11,6 +11,7 @@ const combinationRoutes = require("./admissionCombination.routes");
 const roundRoutes = require("./admissionRound.routes");
 const applicationRoutes = require("./application.routes");
 const reportRoutes = require("./report.routes");
+const settingRoutes = require("./setting.routes");
 
 // Mount routes
 router.use("/auth", authRoutes);
@@ -23,5 +24,6 @@ router.use("/admission-combinations", combinationRoutes);
 router.use("/admission-rounds", roundRoutes);
 router.use("/applications", applicationRoutes);
 router.use("/reports", reportRoutes);
+router.use("/settings", settingRoutes);
 
 module.exports = router;

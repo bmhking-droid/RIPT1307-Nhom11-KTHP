@@ -3,24 +3,23 @@ module.exports = (sequelize, DataTypes) => {
     "AdmissionCombination",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
 
       code: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(10),
         allowNull: false,
         unique: true,
       },
 
-      majorId: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-      },
       subjects: {
-        type: DataTypes.JSON,
-        allowNull: false,
+        type: DataTypes.STRING(100),
+      },
+
+      description: {
+        type: DataTypes.TEXT,
       },
     },
     {
@@ -30,8 +29,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   AdmissionCombination.associate = (models) => {
-    AdmissionCombination.belongsTo(models.Major, {
-      foreignKey: "majorId",
+    AdmissionCombination.belongsToMany(models.Major, {
+      through: "major_combination",
+      foreignKey: "combinationId",
     });
 
     AdmissionCombination.hasMany(models.Application, {

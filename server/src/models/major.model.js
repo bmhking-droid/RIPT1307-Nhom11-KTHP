@@ -3,23 +3,23 @@ module.exports = (sequelize, DataTypes) => {
     "Major",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
 
       universityId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
       },
 
       name: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING(150),
         allowNull: false,
       },
 
       code: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(20),
         unique: true,
         allowNull: false,
       },
@@ -27,6 +27,18 @@ module.exports = (sequelize, DataTypes) => {
       quota: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+      },
+
+      minScore: {
+        type: DataTypes.DECIMAL(4, 2),
+      },
+
+      description: {
+        type: DataTypes.TEXT,
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
     },
     {
@@ -40,12 +52,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "universityId",
     });
 
-    Major.hasMany(models.AdmissionCombination, {
+    Major.hasMany(models.Application, {
       foreignKey: "majorId",
-      onDelete: "CASCADE",
     });
 
-    Major.hasMany(models.Application, {
+    Major.belongsToMany(models.AdmissionCombination, {
+      through: "major_combination",
       foreignKey: "majorId",
     });
   };

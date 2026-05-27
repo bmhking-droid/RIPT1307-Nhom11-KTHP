@@ -8,6 +8,13 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 const roleMiddleware = require("../middlewares/role.middleware");
 
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  controller.getAll,
+);
+
 router.post(
   "/",
   authMiddleware,

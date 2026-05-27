@@ -1,5 +1,18 @@
 const applicationService = require("../services/application.service");
 
+exports.getAll = async (req, res, next) => {
+  try {
+    const applications = await applicationService.getAll(req.query);
+
+    return res.json({
+      success: true,
+      data: applications,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.create = async (req, res, next) => {
   try {
     const application = await applicationService.createApplication(

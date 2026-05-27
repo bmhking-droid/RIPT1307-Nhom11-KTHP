@@ -3,26 +3,28 @@ module.exports = (sequelize, DataTypes) => {
     "University",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
-
-      name: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-      },
-
       code: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(20),
         allowNull: false,
         unique: true,
       },
-
-      address: {
-        type: DataTypes.STRING(500),
+      name: {
+        type: DataTypes.STRING(200),
+        allowNull: false,
       },
-
+      address: {
+        type: DataTypes.TEXT,
+      },
+      description: {
+        type: DataTypes.TEXT,
+      },
+      logoUrl: {
+        type: DataTypes.TEXT,
+      },
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -36,11 +38,6 @@ module.exports = (sequelize, DataTypes) => {
 
   University.associate = (models) => {
     University.hasMany(models.Major, {
-      foreignKey: "universityId",
-      onDelete: "CASCADE",
-    });
-
-    University.hasMany(models.AdmissionRound, {
       foreignKey: "universityId",
       onDelete: "CASCADE",
     });

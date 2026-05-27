@@ -1,3 +1,4 @@
+const path = require("path");
 const { successResponse, errorResponse } = require("../utils/response");
 
 class UploadController {
@@ -7,9 +8,17 @@ class UploadController {
         return errorResponse(res, "Không có file được upload", 400);
       }
 
+      // BUG FIX: Trả về URL có thể truy cập qua HTTP, không phải absolute disk path
+      // req.file.path = "D:\projects\...\uploads\cccd\CCCD-xxx.jpg" (không thể dùng làm URL)
+      // Cần convert thành "/uploads/cccd/CCCD-xxx.jpg" để frontend có thể fetch
+      const relativePath = req.file.path
+        .replace(/\\/g, "/")
+        .split("/uploads/")[1];
+      const fileUrl = `/uploads/${relativePath}`;
+
       const fileData = {
         documentType: req.body.documentType,
-        fileUrl: req.file.path.replace(/\\/g, "/"), // fix Windows path
+        fileUrl,
         originalName: req.file.originalname,
         fileSize: req.file.size,
       };

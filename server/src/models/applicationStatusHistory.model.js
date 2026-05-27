@@ -3,33 +3,38 @@ module.exports = (sequelize, DataTypes) => {
     "ApplicationStatusHistory",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
 
       applicationId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
       },
 
       oldStatus: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
       },
 
       newStatus: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
         allowNull: false,
+      },
+
+      reason: {
+        type: DataTypes.TEXT,
       },
 
       changedBy: {
         type: DataTypes.UUID,
-        allowNull: false,
       },
     },
     {
       tableName: "application_status_history",
       timestamps: true,
+      createdAt: 'changedAt',
+      updatedAt: false,
     },
   );
 

@@ -3,33 +3,28 @@ module.exports = (sequelize, DataTypes) => {
     "ApplicationDocument",
     {
       id: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
       },
 
       applicationId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         allowNull: false,
       },
 
       documentType: {
-        type: DataTypes.ENUM("CCCD", "HOC_BA", "DIEM_THI", "UU_TIEN"),
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
 
-      fileName: {
+      fileUrl: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+
+      originalName: {
         type: DataTypes.STRING(255),
-        allowNull: false,
-      },
-
-      filePath: {
-        type: DataTypes.STRING(500),
-        allowNull: false,
-      },
-
-      mimeType: {
-        type: DataTypes.STRING(100),
       },
 
       fileSize: {

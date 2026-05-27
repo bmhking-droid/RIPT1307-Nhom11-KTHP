@@ -2,7 +2,7 @@ const service = require("../services/admissionRound.service");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await service.getAll();
+    const data = await service.getAll(req.query);
 
     return res.json({
       success: true,
