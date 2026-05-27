@@ -1,126 +1,64 @@
 import request from './request';
 
 export async function getAdminStatistics() {
-  return request('/api/admin/statistics');
+  return request.get('/reports/statistics');
 }
 
 export async function getUniversities() {
-  return request('/api/admin/universities');
+  return request.get('/universities');
 }
 
 export async function createUniversity(data: any) {
-  return request('/api/admin/universities', {
-    method: 'POST',
-    data,
-  });
+  return request.post('/universities', data);
 }
 
 export async function updateUniversity(id: number, data: any) {
-  return request(`/api/admin/universities/${id}`, {
-    method: 'PUT',
-    data,
-  });
+  return request.put(`/universities/${id}`, data);
 }
 
 export async function deleteUniversity(id: number) {
-  return request(`/api/admin/universities/${id}`, {
-    method: 'DELETE',
-  });
+  return request.delete(`/universities/${id}`);
 }
 
 export async function getMajors(params?: { universityId?: number }) {
-  return request('/api/admin/majors', {
-    params,
-  });
+  return request.get('/majors', { params });
 }
 
 export async function createMajor(data: any) {
-  return request('/api/admin/majors', {
-    method: 'POST',
-    data,
-  });
+  return request.post('/majors', data);
 }
 
 export async function updateMajor(id: number, data: any) {
-  return request(`/api/admin/majors/${id}`, {
-    method: 'PUT',
-    data,
-  });
+  return request.put(`/majors/${id}`, data);
 }
 
 export async function deleteMajor(id: number) {
-  return request(`/api/admin/majors/${id}`, {
-    method: 'DELETE',
-  });
-}
-
-export async function getSubjectGroups(params?: { majorId?: number }) {
-  return request('/api/admin/subject-groups', {
-    params,
-  });
-}
-
-export async function createSubjectGroup(data: any) {
-  return request('/api/admin/subject-groups', {
-    method: 'POST',
-    data,
-  });
-}
-
-export async function updateSubjectGroup(id: number, data: any) {
-  return request(`/api/admin/subject-groups/${id}`, {
-    method: 'PUT',
-    data,
-  });
-}
-
-export async function deleteSubjectGroup(id: number) {
-  return request(`/api/admin/subject-groups/${id}`, {
-    method: 'DELETE',
-  });
+  return request.delete(`/majors/${id}`);
 }
 
 export async function getAdmissionRounds(params?: { universityId?: number }) {
-  return request('/api/admin/admission-rounds', {
-    params,
-  });
+  return request.get('/admission-rounds', { params });
 }
 
 export async function createAdmissionRound(data: any) {
-  return request('/api/admin/admission-rounds', {
-    method: 'POST',
-    data,
-  });
+  return request.post('/admission-rounds', data);
+}
+
+export async function updateAdmissionRound(id: string, data: any) {
+  return request.put(`/admission-rounds/${id}`, data);
 }
 
 export async function getApplications(params?: any) {
-  return request('/api/admin/applications', {
-    params,
-  });
+  return request.get('/applications', { params });
 }
 
-export async function getApplicationDetail(id: number) {
-  return request(`/api/admin/applications/${id}`);
+export async function getApplicationDetail(id: string) {
+  return request.get(`/applications/${id}`);
 }
 
 export async function updateApplicationStatus(
-  id: number,
-  status: 'pending' | 'approved' | 'rejected',
+  id: string,
+  data: { status: string; rejectionReason?: string }
 ) {
-  return request(`/api/admin/applications/${id}/status`, {
-    method: 'PUT',
-    data: {
-      status,
-    },
-  });
-}
-
-export async function sendApplicationEmail(id: number, data?: any) {
-  return request(`/api/admin/applications/${id}/send-email`, {
-    method: 'POST',
-    data,
-  });
-}
-export async function getAdminUsers() {
-  return request('/api/admin/users');
+  return request.patch(`/applications/${id}/status`, data);
 }

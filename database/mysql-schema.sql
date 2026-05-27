@@ -1,141 +1,151 @@
--- 1. Users
+CREATE DATABASE online_admission;
+USE online_admission;
+
+-- 1. Bảng Users
 CREATE TABLE users (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role ENUM('student', 'admin', 'super_admin') DEFAULT 'student',
-    is_active BOOLEAN DEFAULT TRUE,
-    email_verified BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    role ENUM('CANDIDATE', 'ADMIN') DEFAULT 'CANDIDATE', 
+    isActive BOOLEAN DEFAULT TRUE,
+    emailVerified BOOLEAN DEFAULT FALSE,                             
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,                     
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
--- 2. Profiles
+-- 2. Bảng Profiles
 CREATE TABLE profiles (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    user_id CHAR(36) UNIQUE NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
+    userId CHAR(36) UNIQUE NOT NULL,                                  
+    fullName VARCHAR(100) NOT NULL,
     cccd VARCHAR(20) UNIQUE,
-    date_of_birth DATE,
+    dateOfBirth DATE,
     gender ENUM('Nam', 'Nữ', 'Khác'),
     phone VARCHAR(20),
     address TEXT,
-    priority_group VARCHAR(50),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    priorityGroup VARCHAR(50),
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 
--- 3. Universities
+-- 3. Bảng Universities
 CREATE TABLE universities (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     code VARCHAR(20) UNIQUE NOT NULL,
     name VARCHAR(200) NOT NULL,
     address TEXT,
     description TEXT,
-    logo_url TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    logoUrl TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
--- 4. Majors (Ngành học)
+-- 4. Bảng Majors (Ngành học)
 CREATE TABLE majors (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    university_id CHAR(36) NOT NULL,
+    universityId CHAR(36) NOT NULL,
     code VARCHAR(20) NOT NULL,
     name VARCHAR(150) NOT NULL,
     quota INT,
-    min_score DECIMAL(4,2),
+    minScore DECIMAL(4,2),
     description TEXT,
-    FOREIGN KEY (university_id) REFERENCES universities(id),
-    UNIQUE KEY uk_major (university_id, code)
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (universityId) REFERENCES universities(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_major (universityId, code)
 );
 
 
--- 5. Admission Combinations (Tổ hợp)
+-- 5. Bảng Admission Combinations (Tổ hợp môn)
 CREATE TABLE admission_combinations (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     code VARCHAR(10) UNIQUE NOT NULL,        -- A00, A01, D01...
     subjects VARCHAR(100),
-    description TEXT
+    description TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
--- Bảng trung gian Many-to-Many
+-- Bảng trung gian Many-to-Many giữa Ngành và Tổ hợp
 CREATE TABLE major_combination (
-    major_id CHAR(36) NOT NULL,
-    combination_id CHAR(36) NOT NULL,
-    PRIMARY KEY (major_id, combination_id),
-    FOREIGN KEY (major_id) REFERENCES majors(id) ON DELETE CASCADE,
-    FOREIGN KEY (combination_id) REFERENCES admission_combinations(id) ON DELETE CASCADE
+    majorId CHAR(36) NOT NULL,
+    combinationId CHAR(36) NOT NULL,
+    PRIMARY KEY (majorId, combinationId),
+    FOREIGN KEY (majorId) REFERENCES majors(id) ON DELETE CASCADE,
+    FOREIGN KEY (combinationId) REFERENCES admission_combinations(id) ON DELETE CASCADE
 );
 
 
--- 6. Admission Rounds (Đợt tuyển sinh)
+-- 6. Bảng Admission Rounds (Đợt tuyển sinh)
 CREATE TABLE admission_rounds (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(100) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    startDate DATE NOT NULL,
+    endDate DATE NOT NULL,
     status ENUM('upcoming', 'ongoing', 'ended') DEFAULT 'upcoming',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 
--- 7. Applications (Hồ sơ)
+-- 7. Bảng Applications (Hồ sơ đăng ký)
 CREATE TABLE applications (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    user_id CHAR(36) NOT NULL,
-    university_id CHAR(36) NOT NULL,
-    major_id CHAR(36) NOT NULL,
-    combination_id CHAR(36) NOT NULL,
-    round_id CHAR(36) NOT NULL,
+    userId CHAR(36) NOT NULL,
+    universityId CHAR(36) NOT NULL,
+    majorId CHAR(36) NOT NULL,
+    combinationId CHAR(36) NOT NULL,
+    roundId CHAR(36) NOT NULL,
    
-    total_score DECIMAL(5,2),
+    totalScore DECIMAL(5,2),
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
    
-    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    reviewed_at DATETIME,
-    reviewed_by CHAR(36),
+    submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    reviewedAt DATETIME,
+    reviewedBy CHAR(36),
    
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (university_id) REFERENCES universities(id),
-    FOREIGN KEY (major_id) REFERENCES majors(id),
-    FOREIGN KEY (combination_id) REFERENCES admission_combinations(id),
-    FOREIGN KEY (round_id) REFERENCES admission_rounds(id),
-    UNIQUE KEY uk_one_application_per_round (user_id, round_id, major_id)
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (universityId) REFERENCES universities(id) ON DELETE CASCADE,
+    FOREIGN KEY (majorId) REFERENCES majors(id) ON DELETE CASCADE,
+    FOREIGN KEY (combinationId) REFERENCES admission_combinations(id) ON DELETE CASCADE,
+    FOREIGN KEY (roundId) REFERENCES admission_rounds(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_one_application_per_round (userId, roundId, majorId)
 );
 
 
--- 8. Application Documents
+-- 8. Bảng Application Documents (Tài liệu đính kèm)
 CREATE TABLE application_documents (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    application_id CHAR(36) NOT NULL,
-    document_type VARCHAR(50) NOT NULL,     -- hoc_ba, cccd, giay_ut...
-    file_url TEXT NOT NULL,
-    original_name VARCHAR(255),
-    file_size INT,
-    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+    applicationId CHAR(36) NOT NULL,
+    documentType VARCHAR(50) NOT NULL,     -- HOC_BA, CCCD, ...
+    fileUrl TEXT NOT NULL,
+    originalName VARCHAR(255),
+    fileSize INT,
+    uploadedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (applicationId) REFERENCES applications(id) ON DELETE CASCADE
 );
 
 
--- 9. Status History
+-- 9. Bảng Status History (Lịch sử trạng thái hồ sơ)
 CREATE TABLE application_status_history (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    application_id CHAR(36) NOT NULL,
-    old_status ENUM('pending', 'approved', 'rejected'),
-    new_status ENUM('pending', 'approved', 'rejected') NOT NULL,
+    applicationId CHAR(36) NOT NULL,
+    oldStatus ENUM('pending', 'approved', 'rejected'),
+    newStatus ENUM('pending', 'approved', 'rejected') NOT NULL,
     reason TEXT,
-    changed_by CHAR(36),
-    changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE
+    changedBy CHAR(36),
+    changedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (applicationId) REFERENCES applications(id) ON DELETE CASCADE
 );
 
 
--- Tạo Index quan trọng
+-- Tối ưu hóa hiệu năng truy vấn dữ liệu bằng Index
 CREATE INDEX idx_applications_status ON applications(status);
-CREATE INDEX idx_applications_user ON applications(user_id);
-CREATE INDEX idx_applications_round ON applications(round_id);
-CREATE INDEX idx_documents_application ON application_documents(application_id);
+CREATE INDEX idx_applications_user ON applications(userId);
+CREATE INDEX idx_applications_round ON applications(roundId);
+CREATE INDEX idx_documents_application ON application_documents(applicationId);

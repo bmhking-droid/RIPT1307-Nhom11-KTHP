@@ -13,34 +13,25 @@ import {
   message,
 } from 'antd';
 import dayjs from 'dayjs';
+
+
 import {
   createAdmissionRound,
   getAdmissionRounds,
-  getUniversities,
+  updateAdmissionRound,
 } from '@/services/admin';
 
 export default function AdmissionRoundsPage() {
-  const [universities, setUniversities] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
-  const [universityId, setUniversityId] = useState<number>();
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
 
-  const fetchUniversities = async () => {
-    const res = await getUniversities();
-    setUniversities(res.data || []);
-  };
-
-  const fetchData = async (selectedUniversityId?: number) => {
-    const res = await getAdmissionRounds({
-      universityId: selectedUniversityId,
-    });
-
+  const fetchData = async () => {
+    const res = await getAdmissionRounds();
     setData(res.data || []);
   };
 
   useEffect(() => {
-    fetchUniversities();
     fetchData();
   }, []);
 
@@ -48,26 +39,19 @@ export default function AdmissionRoundsPage() {
     const values = await form.validateFields();
 
     await createAdmissionRound({
-      universityId: values.universityId,
       name: values.name,
       startDate: values.dateRange?.[0]?.format('YYYY-MM-DD'),
       endDate: values.dateRange?.[1]?.format('YYYY-MM-DD'),
-      active: values.active,
+      isActive: values.isActive,
     });
 
     message.success('Đã thêm đợt tuyển sinh');
     setOpen(false);
     form.resetFields();
-    fetchData(universityId);
+    fetchData();
   };
 
   const columns = [
-    {
-      title: 'Trường',
-      dataIndex: 'universityId',
-      render: (id: number) =>
-        universities.find(item => item.id === id)?.name || '',
-    },
     {
       title: 'Tên đợt',
       dataIndex: 'name',
@@ -82,8 +66,21 @@ export default function AdmissionRoundsPage() {
     },
     {
       title: 'Hoạt động',
-      dataIndex: 'active',
-      render: (value: boolean) => <Switch checked={value} disabled />,
+      dataIndex: 'isActive',
+      render: (checked: boolean, record: any) => (
+        <Switch
+          checked={checked}
+          onChange={async (val) => {
+            try {
+              await updateAdmissionRound(record.id, { isActive: val });
+              message.success(`Đã cập nhật trạng thái hoạt động của đợt ${record.name}`);
+              fetchData();
+            } catch {
+              message.error('Không thể cập nhật trạng thái hoạt động');
+            }
+          }}
+        />
+      ),
     },
   ];
 
@@ -96,21 +93,6 @@ export default function AdmissionRoundsPage() {
         </Button>
       }
     >
-      <Select
-        allowClear
-        placeholder="Lọc theo trường"
-        style={{ width: 320, marginBottom: 16 }}
-        value={universityId}
-        onChange={(value) => {
-          setUniversityId(value);
-          fetchData(value);
-        }}
-        options={universities.map(item => ({
-          label: item.name,
-          value: item.id,
-        }))}
-      />
-
       <Table rowKey="id" columns={columns} dataSource={data} />
 
       <Modal
@@ -122,21 +104,7 @@ export default function AdmissionRoundsPage() {
         }}
         onOk={handleSubmit}
       >
-        <Form form={form} layout="vertical" initialValues={{ active: true }}>
-          <Form.Item
-            name="universityId"
-            label="Trường"
-            rules={[{ required: true, message: 'Vui lòng chọn trường' }]}
-          >
-            <Select
-              placeholder="Chọn trường"
-              options={universities.map(item => ({
-                label: item.name,
-                value: item.id,
-              }))}
-            />
-          </Form.Item>
-
+        <Form form={form} layout="vertical" initialValues={{ isActive: true }}>
           <Form.Item
             name="name"
             label="Tên đợt tuyển sinh"
@@ -158,7 +126,7 @@ export default function AdmissionRoundsPage() {
             />
           </Form.Item>
 
-          <Form.Item name="active" label="Hoạt động" valuePropName="checked">
+          <Form.Item name="isActive" label="Hoạt động" valuePropName="checked">
             <Switch />
           </Form.Item>
         </Form>

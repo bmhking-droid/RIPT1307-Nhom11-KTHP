@@ -1,14 +1,20 @@
 import { defineConfig } from 'umi';
+import proxy from './proxy';
 import routes from './routes';
 
 export default defineConfig({
-  npmClient: 'npm',
+  plugins: [
+    '@umijs/plugins/dist/antd',
+    '@umijs/plugins/dist/request',
+  ],
 
-  routes,
-
-  hash: true,
-
-  history: {
-    type: 'browser',
+  antd: {
   },
+  request: {
+  },
+  
+  routes: routes,
+  proxy: proxy,
+  
+  npmClient: 'npm',
 });

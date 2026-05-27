@@ -7,26 +7,26 @@ export function rootContainer(container: React.ReactNode) {
       locale={viVN}
       theme={{
         token: {
-    colorPrimary: '#4F46E5',
+          colorPrimary: '#4F46E5',
 
-    colorInfo: '#4F46E5',
+          colorInfo: '#4F46E5',
 
-    borderRadius: 16,
+          borderRadius: 16,
 
-    colorText: '#111827',
+          colorText: '#111827',
 
-    colorTextSecondary: '#6B7280',
+          colorTextSecondary: '#6B7280',
 
-    colorBorder: '#DDE3F4',
+          colorBorder: '#DDE3F4',
 
-    colorBgLayout: '#F5F7FF',
+          colorBgLayout: '#F5F7FF',
 
-    colorBgContainer: '#FFFFFF',
+          colorBgContainer: '#FFFFFF',
 
-    fontFamily:
-      'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
-  },
-        
+          fontFamily:
+            'Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
+        },
+
       }}
     >
       {container}

@@ -23,20 +23,24 @@ export default function UniversitiesPage() {
   }, []);
 
   const handleSubmit = async () => {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
 
-    if (editing) {
-      await updateUniversity(editing.id, values);
-      message.success('Đã cập nhật trường');
-    } else {
-      await createUniversity(values);
-      message.success('Đã thêm trường');
+      if (editing) {
+        await updateUniversity(editing.id, values);
+        message.success('Đã cập nhật trường');
+      } else {
+        await createUniversity(values);
+        message.success('Đã thêm trường');
+      }
+
+      setOpen(false);
+      setEditing(undefined);
+      form.resetFields();
+      fetchData();
+    } catch (err) {
+      console.error(err);
     }
-
-    setOpen(false);
-    setEditing(undefined);
-    form.resetFields();
-    fetchData();
   };
 
   const columns = [
@@ -45,8 +49,21 @@ export default function UniversitiesPage() {
     { title: 'Địa chỉ', dataIndex: 'address' },
     {
       title: 'Hoạt động',
-      dataIndex: 'active',
-      render: (value: boolean) => <Switch checked={value} disabled />,
+      dataIndex: 'isActive',
+      render: (checked: boolean, record: any) => (
+        <Switch
+          checked={checked}
+          onChange={async (val) => {
+            try {
+              await updateUniversity(record.id, { isActive: val });
+              message.success(`Đã cập nhật trạng thái hoạt động của trường ${record.name}`);
+              fetchData();
+            } catch {
+              message.error('Không thể cập nhật trạng thái hoạt động');
+            }
+          }}
+        />
+      ),
     },
     {
       title: 'Thao tác',
@@ -100,7 +117,7 @@ export default function UniversitiesPage() {
         }}
         onOk={handleSubmit}
       >
-        <Form form={form} layout="vertical" initialValues={{ active: true }}>
+        <Form form={form} layout="vertical" initialValues={{ isActive: true }}>
           <Form.Item name="code" label="Mã trường" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -113,7 +130,7 @@ export default function UniversitiesPage() {
             <Input />
           </Form.Item>
 
-          <Form.Item name="active" label="Hoạt động" valuePropName="checked">
+          <Form.Item name="isActive" label="Hoạt động" valuePropName="checked">
             <Switch />
           </Form.Item>
         </Form>

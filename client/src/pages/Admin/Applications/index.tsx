@@ -15,6 +15,7 @@ import {
   getMajors,
   getUniversities,
 } from '@/services/admin';
+import moment from 'moment'; 
 
 const { Search } = Input;
 
@@ -29,24 +30,37 @@ export default function ApplicationsPage() {
   const [universities, setUniversities] = useState<any[]>([]);
   const [majors, setMajors] = useState<any[]>([]);
   const [rounds, setRounds] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [filters, setFilters] = useState<any>({});
 
   const fetchInitialData = async () => {
-    const [universityRes, majorRes, roundRes] = await Promise.all([
-      getUniversities(),
-      getMajors(),
-      getAdmissionRounds(),
-    ]);
+    try {
+      const [universityRes, majorRes, roundRes] = await Promise.all([
+        getUniversities(),
+        getMajors(),
+        getAdmissionRounds(),
+      ]);
 
-    setUniversities(universityRes.data || []);
-    setMajors(majorRes.data || []);
-    setRounds(roundRes.data || []);
+      setUniversities(universityRes?.data || []);
+      setMajors(majorRes?.data || []);
+      setRounds(roundRes?.data || []);
+    } catch (error) {
+      console.error('Lỗi nạp dữ liệu ban đầu:', error);
+    }
   };
 
   const fetchApplications = async (params = filters) => {
-    const res = await getApplications(params);
-    setData(res.data || []);
+    setLoading(true);
+    try {
+      const res = await getApplications(params);
+      const rows = res?.data?.rows || res?.data || [];
+      setData(rows);
+    } catch (error) {
+      console.error('Lỗi lấy danh sách hồ sơ:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -57,20 +71,20 @@ export default function ApplicationsPage() {
   const handleFilterChange = async (key: string, value: any) => {
     const nextFilters = {
       ...filters,
-      [key]: value,
+      [key]: value || undefined, 
     };
 
     if (key === 'universityId') {
       nextFilters.majorId = undefined;
-      nextFilters.admissionRoundId = undefined;
+      nextFilters.roundId = undefined; 
 
       const [majorRes, roundRes] = await Promise.all([
         getMajors({ universityId: value }),
         getAdmissionRounds({ universityId: value }),
       ]);
 
-      setMajors(majorRes.data || []);
-      setRounds(roundRes.data || []);
+      setMajors(majorRes?.data || []);
+      setRounds(roundRes?.data || []);
     }
 
     setFilters(nextFilters);
@@ -83,31 +97,35 @@ export default function ApplicationsPage() {
       approved: <Tag color="green">Đã duyệt</Tag>,
       rejected: <Tag color="red">Từ chối</Tag>,
     };
-
-    return map[status];
+    return map[status] || <Tag color="default">{status}</Tag>;
   };
 
   const columns = [
     {
-      title: 'Mã hồ sơ',
-      dataIndex: 'code',
-      width: 190,
+      title: 'Mã hồ sơ (ID)',
+      dataIndex: 'id',
+      width: 150,
+      render: (id: string) => <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{id?.substring(0, 8).toUpperCase()}</span>,
     },
     {
       title: 'Thí sinh',
-      dataIndex: 'candidateName',
+      dataIndex: 'User',
+      render: (User: any) => User?.profile?.fullName || 'Chưa cập nhật', 
     },
     {
-      title: 'Trường',
-      dataIndex: 'universityName',
+      title: 'Trường tuyển sinh',
+      dataIndex: 'University',
+      render: (University: any) => University?.name || '---', 
     },
     {
-      title: 'Ngành',
-      dataIndex: 'majorName',
+      title: 'Ngành đăng ký',
+      dataIndex: 'Major',
+      render: (Major: any) => `[${Major?.code || ''}] ${Major?.name || '---'}`, 
     },
     {
       title: 'Đợt',
-      dataIndex: 'admissionRoundName',
+      dataIndex: 'AdmissionRound',
+      render: (AdmissionRound: any) => AdmissionRound?.name || '---', 
     },
     {
       title: 'Trạng thái',
@@ -115,14 +133,18 @@ export default function ApplicationsPage() {
       render: renderStatus,
     },
     {
-      title: 'Ngày nộp',
-      dataIndex: 'createdAt',
+      title: 'Ngày nộp hồ sơ',
+      dataIndex: 'submittedAt', 
+      render: (date: string) => date ? moment(date).format('DD/MM/YYYY HH:mm') : '---',
     },
     {
       title: 'Thao tác',
+      width: 100,
       render: (_: any, record: any) => (
         <Button
-          type="link"
+          type="primary"
+          ghost
+          size="small"
           onClick={() => history.push(`/admin/applications/${record.id}`)}
         >
           Chi tiết
@@ -132,19 +154,19 @@ export default function ApplicationsPage() {
   ];
 
   return (
-    <Card title="Quản lý hồ sơ nộp">
+    <Card title="Hệ thống Quản lý Hồ sơ Xét tuyển">
       <Space style={{ marginBottom: 16 }} wrap>
         <Search
           allowClear
-          placeholder="Tìm mã hồ sơ, tên, email, SĐT"
-          enterButton="Tìm"
+          placeholder="Tìm kiếm thông tin nâng cao..."
+          enterButton="Tìm kiếm"
           style={{ width: 320 }}
           onSearch={(value) => handleFilterChange('keyword', value)}
         />
 
         <Select
           allowClear
-          placeholder="Trường"
+          placeholder="Lọc theo Trường học"
           style={{ width: 260 }}
           value={filters.universityId}
           onChange={(value) => handleFilterChange('universityId', value)}
@@ -156,7 +178,7 @@ export default function ApplicationsPage() {
 
         <Select
           allowClear
-          placeholder="Ngành"
+          placeholder="Lọc theo Ngành học"
           style={{ width: 220 }}
           value={filters.majorId}
           onChange={(value) => handleFilterChange('majorId', value)}
@@ -169,12 +191,10 @@ export default function ApplicationsPage() {
 
         <Select
           allowClear
-          placeholder="Đợt tuyển sinh"
+          placeholder="Lọc theo Đợt tuyển sinh"
           style={{ width: 240 }}
-          value={filters.admissionRoundId}
-          onChange={(value) =>
-            handleFilterChange('admissionRoundId', value)
-          }
+          value={filters.roundId} 
+          onChange={(value) => handleFilterChange('roundId', value)}
           disabled={!filters.universityId}
           options={rounds.map(item => ({
             label: item.name,
@@ -184,7 +204,7 @@ export default function ApplicationsPage() {
 
         <Select
           allowClear
-          placeholder="Trạng thái"
+          placeholder="Trạng thái hồ sơ"
           style={{ width: 160 }}
           value={filters.status}
           onChange={(value) => handleFilterChange('status', value)}
@@ -192,7 +212,14 @@ export default function ApplicationsPage() {
         />
       </Space>
 
-      <Table rowKey="id" columns={columns} dataSource={data} />
+      <Table 
+        rowKey="id" 
+        columns={columns} 
+        dataSource={data} 
+        loading={loading}
+        bordered
+        pagination={{ pageSize: 10 }}
+      />
     </Card>
   );
 }

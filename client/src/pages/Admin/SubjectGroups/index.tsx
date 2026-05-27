@@ -5,106 +5,77 @@ import {
   Form,
   Input,
   Modal,
-  Select,
   Space,
   Switch,
   Table,
   message,
 } from 'antd';
-import {
-  createSubjectGroup,
-  deleteSubjectGroup,
-  getMajors,
-  getSubjectGroups,
-  getUniversities,
-  updateSubjectGroup,
-} from '@/services/admin';
+import request from '@/services/request';
 
 export default function SubjectGroupsPage() {
-  const [universities, setUniversities] = useState<any[]>([]);
-  const [majors, setMajors] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
-
-  const [universityId, setUniversityId] = useState<number>();
-  const [majorId, setMajorId] = useState<number>();
-
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>();
-
   const [form] = Form.useForm();
 
-  const fetchUniversities = async () => {
-    const res = await getUniversities();
-    setUniversities(res.data || []);
-  };
-
-  const fetchMajors = async (selectedUniversityId?: number) => {
-    const res = await getMajors({
-      universityId: selectedUniversityId,
-    });
-
-    setMajors(res.data || []);
-  };
-
-  const fetchSubjectGroups = async (selectedMajorId?: number) => {
-    const res = await getSubjectGroups({
-      majorId: selectedMajorId,
-    });
-
-    setData(res.data || []);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res: any = await request.get('/admission-combinations');
+      setData(res.data || []);
+    } catch (error) {
+      console.error('Lỗi tải danh sách tổ hợp:', error);
+      message.error('Không thể tải danh sách tổ hợp xét tuyển từ máy chủ');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchUniversities();
-    fetchMajors();
-    fetchSubjectGroups();
+    fetchData();
   }, []);
 
-  const handleUniversityChange = async (value?: number) => {
-    setUniversityId(value);
-    setMajorId(undefined);
-
-    await fetchMajors(value);
-    await fetchSubjectGroups(undefined);
-  };
-
-  const handleMajorChange = async (value?: number) => {
-    setMajorId(value);
-    await fetchSubjectGroups(value);
-  };
-
   const handleSubmit = async () => {
-    const values = await form.validateFields();
-
-    const payload = {
-      ...values,
-      subjects: values.subjects
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter(Boolean),
-    };
-
-    if (editing) {
-      await updateSubjectGroup(editing.id, payload);
-      message.success('Đã cập nhật tổ hợp xét tuyển');
-    } else {
-      await createSubjectGroup(payload);
-      message.success('Đã thêm tổ hợp xét tuyển');
+    try {
+      const values = await form.validateFields();
+      if (editing) {
+        await request.put(`/admission-combinations/${editing.id}`, values);
+        message.success('Đã cập nhật tổ hợp xét tuyển');
+      } else {
+        await request.post('/admission-combinations', values);
+        message.success('Đã thêm tổ hợp xét tuyển');
+      }
+      setOpen(false);
+      setEditing(undefined);
+      form.resetFields();
+      fetchData();
+    } catch (error: any) {
+      if (error?.errorFields) return; 
+      message.error('Thao tác thất bại');
     }
+  };
 
-    setOpen(false);
-    setEditing(undefined);
-    form.resetFields();
-    fetchSubjectGroups(majorId);
+  const handleDelete = async (id: string) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa',
+      content: 'Bạn có chắc chắn muốn xóa tổ hợp xét tuyển này?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await request.delete(`/admission-combinations/${id}`);
+          message.success('Đã xóa tổ hợp xét tuyển');
+          fetchData();
+        } catch {
+          message.error('Không thể xóa tổ hợp này');
+        }
+      },
+    });
   };
 
   const columns = [
-    {
-      title: 'Ngành',
-      dataIndex: 'majorId',
-      render: (id: number) =>
-        majors.find(item => item.id === id)?.name || '',
-    },
     {
       title: 'Mã tổ hợp',
       dataIndex: 'code',
@@ -112,12 +83,6 @@ export default function SubjectGroupsPage() {
     {
       title: 'Môn xét tuyển',
       dataIndex: 'subjects',
-      render: (subjects: string[]) => subjects.join(', '),
-    },
-    {
-      title: 'Hoạt động',
-      dataIndex: 'active',
-      render: (value: boolean) => <Switch checked={value} disabled />,
     },
     {
       title: 'Thao tác',
@@ -127,10 +92,7 @@ export default function SubjectGroupsPage() {
             type="link"
             onClick={() => {
               setEditing(record);
-              form.setFieldsValue({
-                ...record,
-                subjects: record.subjects.join(', '),
-              });
+              form.setFieldsValue(record);
               setOpen(true);
             }}
           >
@@ -140,11 +102,7 @@ export default function SubjectGroupsPage() {
           <Button
             type="link"
             danger
-            onClick={async () => {
-              await deleteSubjectGroup(record.id);
-              message.success('Đã xóa tổ hợp xét tuyển');
-              fetchSubjectGroups(majorId);
-            }}
+            onClick={() => handleDelete(record.id)}
           >
             Xóa
           </Button>
@@ -162,34 +120,13 @@ export default function SubjectGroupsPage() {
         </Button>
       }
     >
-      <Space style={{ marginBottom: 16 }}>
-        <Select
-          allowClear
-          placeholder="Lọc theo trường"
-          style={{ width: 300 }}
-          value={universityId}
-          onChange={handleUniversityChange}
-          options={universities.map(item => ({
-            label: item.name,
-            value: item.id,
-          }))}
-        />
-
-        <Select
-          allowClear
-          placeholder="Lọc theo ngành"
-          style={{ width: 260 }}
-          value={majorId}
-          onChange={handleMajorChange}
-          disabled={!universityId}
-          options={majors.map(item => ({
-            label: item.name,
-            value: item.id,
-          }))}
-        />
-      </Space>
-
-      <Table rowKey="id" columns={columns} dataSource={data} />
+      <Table 
+        rowKey="id" 
+        columns={columns} 
+        dataSource={data} 
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
 
       <Modal
         title={editing ? 'Cập nhật tổ hợp xét tuyển' : 'Thêm tổ hợp xét tuyển'}
@@ -201,21 +138,7 @@ export default function SubjectGroupsPage() {
         }}
         onOk={handleSubmit}
       >
-        <Form form={form} layout="vertical" initialValues={{ active: true }}>
-          <Form.Item
-            name="majorId"
-            label="Ngành"
-            rules={[{ required: true, message: 'Vui lòng chọn ngành' }]}
-          >
-            <Select
-              placeholder="Chọn ngành"
-              options={majors.map(item => ({
-                label: item.name,
-                value: item.id,
-              }))}
-            />
-          </Form.Item>
-
+        <Form form={form} layout="vertical">
           <Form.Item
             name="code"
             label="Mã tổ hợp"
@@ -230,10 +153,6 @@ export default function SubjectGroupsPage() {
             rules={[{ required: true, message: 'Vui lòng nhập các môn' }]}
           >
             <Input placeholder="VD: Toán, Vật lý, Hóa học" />
-          </Form.Item>
-
-          <Form.Item name="active" label="Hoạt động" valuePropName="checked">
-            <Switch />
           </Form.Item>
         </Form>
       </Modal>

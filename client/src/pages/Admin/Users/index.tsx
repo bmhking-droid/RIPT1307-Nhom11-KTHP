@@ -1,33 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Space, Table, Tag, message } from 'antd';
-import { getAdminUsers } from '@/services/admin';
+import { Button, Card, Space, Table, Tag, message, Modal } from 'antd';
+import request from '@/services/request';
+import dayjs from 'dayjs';
 
 export default function UsersPage() {
   const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    const res = await getAdminUsers();
-    setData(res.data || []);
+    try {
+      setLoading(true);
+      const res: any = await request.get('/users');
+      setData(res.data || []);
+    } catch (error) {
+      console.error('Lỗi tải danh sách người dùng:', error);
+      message.error('Không thể tải danh sách người dùng từ máy chủ');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  const handleToggleStatus = (record: any) => {
+    Modal.confirm({
+      title: `${record.isActive ? 'Khóa' : 'Mở khóa'} tài khoản`,
+      content: `Bạn có chắc chắn muốn ${record.isActive ? 'khóa' : 'mở khóa'} tài khoản "${record.profile?.fullName || record.email}"?`,
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      okType: record.isActive ? 'danger' : 'primary',
+      onOk: async () => {
+        try {
+          await request.patch(`/users/${record.id}/toggle-status`);
+          message.success(`Đã ${record.isActive ? 'khóa' : 'mở khóa'} tài khoản thành công`);
+          fetchData();
+        } catch (error) {
+          message.error('Thao tác thất bại');
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: 'Họ tên',
-      dataIndex: 'name',
+      render: (_: any, record: any) => record.profile?.fullName || 'Chưa cập nhật',
     },
     {
       title: 'Email',
       dataIndex: 'email',
     },
     {
+      title: 'Số điện thoại',
+      render: (_: any, record: any) => record.profile?.phone || '---',
+    },
+    {
       title: 'Vai trò',
       dataIndex: 'role',
       render: (role: string) =>
-        role === 'admin' ? (
+        role === 'ADMIN' ? (
           <Tag color="blue">Quản trị viên</Tag>
         ) : (
           <Tag color="green">Thí sinh</Tag>
@@ -35,31 +68,29 @@ export default function UsersPage() {
     },
     {
       title: 'Trạng thái',
-      dataIndex: 'status',
-      render: (status: string) =>
-        status === 'active' ? (
+      dataIndex: 'isActive',
+      render: (isActive: boolean) =>
+        isActive ? (
           <Tag color="green">Hoạt động</Tag>
         ) : (
           <Tag color="red">Đã khóa</Tag>
         ),
     },
     {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      render: (date: string) => date ? dayjs(date).format('DD/MM/YYYY HH:mm') : '---',
+    },
+    {
       title: 'Thao tác',
-      render: () => (
+      render: (_: any, record: any) => (
         <Space>
           <Button
             type="link"
-            onClick={() => message.info('Chức năng đang phát triển')}
+            danger={record.isActive}
+            onClick={() => handleToggleStatus(record)}
           >
-            Xem
-          </Button>
-
-          <Button
-            type="link"
-            danger
-            onClick={() => message.info('Chức năng đang phát triển')}
-          >
-            Khóa
+            {record.isActive ? 'Khóa' : 'Mở khóa'}
           </Button>
         </Space>
       ),
@@ -68,7 +99,13 @@ export default function UsersPage() {
 
   return (
     <Card title="Quản lý người dùng">
-      <Table rowKey="id" columns={columns} dataSource={data} />
+      <Table 
+        rowKey="id" 
+        columns={columns} 
+        dataSource={data} 
+        loading={loading}
+        pagination={{ pageSize: 10 }}
+      />
     </Card>
   );
 }

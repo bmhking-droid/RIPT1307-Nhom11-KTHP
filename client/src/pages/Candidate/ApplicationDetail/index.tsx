@@ -9,9 +9,9 @@ import {
   Tag,
   Timeline,
   Empty,
+  message,
 } from 'antd';
 import { getCandidateApplicationDetail } from '@/services/candidate';
-// import styles from './index.less';
 
 const statusMap: any = {
   pending: {
@@ -30,100 +30,130 @@ const statusMap: any = {
 
 export default function CandidateApplicationDetail() {
   const params = useParams<{ id: string }>();
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
-    const res = await getCandidateApplicationDetail(Number(params.id));
-    setData(res.data);
+    try {
+      setLoading(true);
+      if (!params.id) return;
+
+      const res = await getCandidateApplicationDetail(params.id);
+      setData(res.data);
+    } catch (error) {
+      message.error('Không thể tải thông tin hồ sơ xét tuyển');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, [params.id]);
 
+  if (loading) {
+    return <Card loading={true} />;
+  }
+
   if (!data) {
     return (
       <Card>
-        <Empty description="Không tìm thấy hồ sơ" />
+        <Empty description="Không tìm thấy hồ sơ xét tuyển hợp lệ" />
       </Card>
     );
   }
 
+  const profile = data.User?.profile || {};
+  const university = data.University || {};
+  const major = data.Major || {};
+  const admissionRound = data.AdmissionRound || {};
+
   return (
-    <div className={styles.page}>
+    <div>
       <Card
-        title="Chi tiết hồ sơ"
+        title="Chi tiết hồ sơ xét tuyển của bạn"
         extra={<Button onClick={() => history.back()}>Quay lại</Button>}
       >
-        <Descriptions bordered column={2}>
+        {/* KHỐI THÔNG TIN CÁ NHÂN CỦA THÍ SINH */}
+        <Descriptions title="Thông tin thí sinh" bordered column={2}>
           <Descriptions.Item label="Mã hồ sơ">
-            {data.code}
+            {data.id?.substring(0, 8).toUpperCase() || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Trạng thái">
             <Tag color={statusMap[data.status]?.color}>
-              {statusMap[data.status]?.text}
+              {statusMap[data.status]?.text || data.status}
             </Tag>
           </Descriptions.Item>
 
           <Descriptions.Item label="Họ tên">
-            {data.candidateName}
+            {profile.fullName || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Email">
-            {data.email}
+            {data.User?.email || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Số điện thoại">
-            {data.phone}
+            {profile.phone || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Ngày nộp">
-            {data.createdAt}
+            {data.submittedAt ? new Date(data.submittedAt).toLocaleDateString('vi-VN') : '---'}
           </Descriptions.Item>
+
+          {data.status === 'rejected' && data.rejectionReason && (
+            <Descriptions.Item label="Lý do từ chối từ nhà trường" span={2}>
+              <span style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
+                {data.rejectionReason}
+              </span>
+            </Descriptions.Item>
+          )}
         </Descriptions>
 
         <Divider />
 
+        {/* KHỐI THÔNG TIN NGUYỆN VỌNG ĐĂNG KÝ */}
         <Descriptions title="Thông tin đăng ký" bordered column={2}>
           <Descriptions.Item label="Trường">
-            {data.universityName}
+            {university.name || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Ngành">
-            {data.majorName}
+            {major.name || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Tổ hợp xét tuyển">
-            {data.subjectGroupCode}
+            {data.AdmissionCombination?.code || data.AdmissionCombination?.subjects || '---'}
           </Descriptions.Item>
 
           <Descriptions.Item label="Đợt tuyển sinh">
-            {data.admissionRoundName}
+            {admissionRound.name || '---'}
           </Descriptions.Item>
         </Descriptions>
 
         <Divider />
 
+        {/* KHỐI MINH CHỨNG TÀI LIỆU ĐÃ TẢI LÊN */}
         <Card size="small" title="File minh chứng đã nộp">
           <List
-            dataSource={data.evidenceFiles || []}
+            dataSource={data.documents || []}
             renderItem={(file: any) => (
               <List.Item
                 actions={[
                   <a
                     key="view"
-                    href={file.url}
+                    href={file.fileUrl ? (file.fileUrl.startsWith('http') ? file.fileUrl : `http://localhost:5000${file.fileUrl}`) : '#'}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Xem file
+                    Xem file trực tuyến
                   </a>,
                 ]}
               >
                 <List.Item.Meta
-                  title={file.name}
-                  description={`Loại file: ${file.type}`}
+                  title={file.originalName || 'Tài liệu chưa đặt tên'}
+                  description={`Loại tài liệu: ${file.documentType || 'N/A'}`}
                 />
               </List.Item>
             )}
@@ -132,16 +162,17 @@ export default function CandidateApplicationDetail() {
 
         <Divider />
 
+        {/* KHỐI TIẾN TRÌNH LỊCH SỬ XỬ LÝ HỒ SƠ */}
         <Card size="small" title="Tiến trình xử lý hồ sơ">
           <Timeline
             items={[
               {
                 color: 'blue',
-                children: 'Thí sinh đã nộp hồ sơ',
+                children: 'Thí sinh hoàn tất gửi hồ sơ lên hệ thống',
               },
               {
                 color: data.status !== 'pending' ? 'blue' : 'gray',
-                children: 'Nhà trường tiếp nhận hồ sơ',
+                children: 'Hội đồng tuyển sinh nhà trường tiếp nhận hồ sơ',
               },
               {
                 color:
@@ -152,10 +183,10 @@ export default function CandidateApplicationDetail() {
                       : 'gray',
                 children:
                   data.status === 'approved'
-                    ? 'Hồ sơ đã được duyệt'
+                    ? 'Hồ sơ đủ điều kiện và đã được phê duyệt thành công'
                     : data.status === 'rejected'
-                      ? 'Hồ sơ bị từ chối'
-                      : 'Đang chờ kết quả xét duyệt',
+                      ? `Hồ sơ bị từ chối duyệt (Lý do: ${data.rejectionReason || 'Không có lý do cụ thể'})`
+                      : 'Đang xếp hàng chờ hội đồng xét duyệt kết quả',
               },
             ]}
           />

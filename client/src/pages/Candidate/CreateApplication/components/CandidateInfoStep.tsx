@@ -1,11 +1,8 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Col, Form, Input, InputNumber, Row } from 'antd';
 import styles from '../index.less';
-import {
-  phoneRules,
-  emailRules,
-  citizenIdRules,
-} from '@/utils/validators';
+import { phoneRules, emailRules, citizenIdRules } from '@/utils/validators';
+
 const { TextArea } = Input;
 
 export default function CandidateInfoStep() {
@@ -21,85 +18,88 @@ export default function CandidateInfoStep() {
 
       <div className={styles.profileNotice}>
         Thông tin bên dưới được đồng bộ từ mục <strong>Thông tin cá nhân</strong>.
-        Nếu cần chỉnh sửa, vui lòng cập nhật tại trang hồ sơ trước khi nộp.
+        Bạn có thể chỉnh sửa trực tiếp tại đây nếu thông tin trống.
       </div>
 
       <Row gutter={[20, 12]}>
+        {/* 1. Họ và tên */}
         <Col xs={24} md={12}>
-<Form.Item
-  name="fullName"
-  label="Họ và tên"
-  rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
->            <Input size="large" disabled />
+          <Form.Item
+            name="fullName"
+            label="Họ và tên"
+            rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
+          >
+            <Input size="large" placeholder="Nhập họ và tên" />
           </Form.Item>
         </Col>
 
-        
-
+        {/* 2. Email */}
         <Col xs={24} md={12}>
-<Form.Item
-  name="email"
-  label="Email"
-  rules={[
-    { required: true, message: 'Vui lòng nhập email' },
-    ...emailRules,
-  ]}
->            <Input size="large" disabled />
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={emailRules}
+          >
+            <Input size="large" placeholder="Nhập địa chỉ email" disabled />
           </Form.Item>
         </Col>
 
+        {/* 3. Số điện thoại */}
         <Col xs={24} md={12}>
-<Form.Item
-  name="phone"
-  label="Số điện thoại"
-  rules={[
-    { required: true, message: 'Vui lòng nhập số điện thoại' },
-    ...phoneRules,
-  ]}
->            <Input size="large" disabled />
+          <Form.Item
+            name="phone"
+            label="Số điện thoại"
+            rules={phoneRules}
+          >
+            <Input size="large" placeholder="Nhập số điện thoại" />
           </Form.Item>
         </Col>
 
+        {/* 4. Giới tính */}
         <Col xs={24} md={12}>
           <Form.Item label="Giới tính" name="gender">
-            <Input size="large" disabled />
+            <Input size="large" placeholder="Nhập giới tính (Nam/Nữ)" />
           </Form.Item>
         </Col>
+
+        {/* 5. Ngày sinh */}
         <Col xs={24} md={12}>
           <Form.Item label="Ngày sinh" name="dob">
-            <Input size="large" disabled />
+            <Input size="large" placeholder="Ví dụ: 14/12/2005" />
           </Form.Item>
         </Col>
 
+        {/* 6. Tỉnh/Thành phố */}
         <Col xs={24} md={12}>
           <Form.Item label="Tỉnh/Thành phố" name="province">
-            <Input size="large" disabled />
+            <Input size="large" placeholder="Nhập Tỉnh/Thành phố" />
           </Form.Item>
         </Col>
 
+        {/* 7. CCCD */}
         <Col xs={24} md={12}>
-<Form.Item
-  name="citizenId"
-  label="CCCD"
-  rules={[
-    { required: true, message: 'Vui lòng nhập CCCD' },
-    ...citizenIdRules,
-  ]}
->            <Input  maxLength={12} disabled />
+          <Form.Item
+            name="citizenId"
+            label="CCCD"
+            rules={citizenIdRules}
+          >
+            <Input size="large" maxLength={12} placeholder="Nhập mã số CCCD 12 số" />
           </Form.Item>
         </Col>
 
+        {/* 8. Địa chỉ liên hệ */}
         <Col xs={24}>
           <Form.Item label="Địa chỉ liên hệ" name="address">
-            <TextArea rows={3} disabled />
+            <TextArea rows={3} placeholder="Nhập số nhà, tên đường, xã/phường, quận/huyện..." />
           </Form.Item>
         </Col>
 
+        {/* 9. Điểm xét tuyển */}
         <Col xs={24} md={12}>
           <Form.Item
             label="Điểm xét tuyển"
             name="score"
-            rules={[{ required: true, message: 'Vui lòng nhập điểm xét tuyển' }]}
+            rules={[{ required: true, message: 'Vui lòng nhập điểm xét tuyển!' }]}
           >
             <InputNumber
               size="large"

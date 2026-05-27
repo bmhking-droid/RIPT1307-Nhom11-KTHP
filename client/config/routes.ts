@@ -1,4 +1,15 @@
 export default [
+  // Auth
+  {
+    path: '/login',
+    component: '@/pages/Auth/Login',
+  },
+  {
+    path: '/register',
+    component: '@/pages/Auth/Register',
+  },
+
+  //Public
   {
     path: '/',
     component: '@/layouts/PublicLayout',
@@ -7,17 +18,10 @@ export default [
         path: '/',
         component: '@/pages/index',
       },
-      {
-        path: '/login',
-        component: '@/pages/Auth/Login',
-      },
-      {
-        path: '/register',
-        component: '@/pages/Auth/Register',
-      },
     ],
   },
 
+//CANDIDATE
   {
     path: '/candidate',
     component: '@/layouts/CandidateLayout',
@@ -44,6 +48,8 @@ export default [
       },
     ],
   },
+  
+  //ADMIN
   {
     path: '/admin',
     component: '@/layouts/AdminLayout',
