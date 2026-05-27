@@ -336,9 +336,9 @@ TH_LapTrinhWeb/
 │   │   ├── utils/              # Các hàm tiện ích (Bản nháp hồ sơ...)
 │   │   └── app.tsx             # Điểm khởi chạy cấu hình chạy Client
 │   └── package.json            # Thư viện Frontend (Ant Design, Axios, UmiJS)
-│
+
+├── database/               # File SQL Schema và Dữ liệu mẫu (Seed)
 └── server/                     # BACKEND (Node.js / Express)
-    ├── database/               # File SQL Schema và Dữ liệu mẫu (Seed)
     ├── src/
     │   ├── configs/            # Cấu hình Database, JWT, Mail, Multer Upload
     │   ├── controllers/        # Điều hướng xử lý request từ Client
