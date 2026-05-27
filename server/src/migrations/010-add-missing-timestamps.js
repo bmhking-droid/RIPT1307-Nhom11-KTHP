@@ -1,4 +1,3 @@
-// Migration to add missing timestamp columns (createdAt/updatedAt) to multiple tables
 "use strict";
 
 module.exports = {

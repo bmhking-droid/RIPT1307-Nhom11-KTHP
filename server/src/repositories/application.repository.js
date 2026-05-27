@@ -1,4 +1,3 @@
-// Application repository - manages application data with related entity associations
 const { Application, University, Major, Profile, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory, User } = require("../models");
 
 exports.create = async (payload, transaction) => {

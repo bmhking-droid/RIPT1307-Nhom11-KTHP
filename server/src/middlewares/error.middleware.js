@@ -18,9 +18,9 @@ const errorHandler = (err, req, res, next) => {
     if (firstError) {
       const path = firstError.path;
       const modelName = firstError.instance
-        ? (firstError.instance.constructor.name || 
-           (firstError.instance._modelOptions && 
-            firstError.instance._modelOptions.name && 
+        ? (firstError.instance.constructor.name ||
+           (firstError.instance._modelOptions &&
+            firstError.instance._modelOptions.name &&
             firstError.instance._modelOptions.name.singular))
         : null;
 
@@ -33,7 +33,7 @@ const errorHandler = (err, req, res, next) => {
       } else if (modelName === "Profile" && path === "cccd") {
         message = "Số CCCD này đã tồn tại trên hệ thống!";
       } else {
-        // Fallback checks
+
         const table = err.parent && err.parent.table;
         if (path === "code") {
           if (table === "universities") {

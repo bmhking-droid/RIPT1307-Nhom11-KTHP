@@ -7,7 +7,6 @@ const {
   handleUploadError,
 } = require("../middlewares/upload.middleware");
 
-// BUG FIX: uploadSingle có thể throw MulterError - cần dùng wrapper để bắt lỗi rồi forward vào error middleware
 router.post(
   "/document",
   authMiddleware,

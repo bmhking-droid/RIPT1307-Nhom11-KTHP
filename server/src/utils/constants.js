@@ -1,6 +1,6 @@
 module.exports = {
   ROLES: {
-    CANDIDATE: "CANDIDATE", 
+    CANDIDATE: "CANDIDATE",
     ADMIN: "ADMIN",
   },
 

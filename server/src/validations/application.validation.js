@@ -7,10 +7,8 @@ exports.createApplicationSchema = Joi.object({
 
   combinationId: Joi.string().uuid().required(),
 
-  // BUG FIX: đổi admissionRoundId → roundId để khớp với Application model
   roundId: Joi.string().uuid().required(),
 
-  // BUG FIX: đổi score → totalScore để khớp với Application model
   totalScore: Joi.number().min(0).max(30).precision(2).optional(),
 
   priorityType: Joi.string().allow("", null),

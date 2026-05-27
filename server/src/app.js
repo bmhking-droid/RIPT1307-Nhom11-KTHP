@@ -1,4 +1,3 @@
-// Express server setup with middleware for CORS, security, and error handling
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
@@ -38,7 +37,6 @@ app.get("/", (req, res) => {
 
 app.use("/api", routes);
 
-// BUG FIX: Mount notFound middleware before errorHandler to return 404 in correct format
 app.use(notFound);
 app.use(errorHandler);
 

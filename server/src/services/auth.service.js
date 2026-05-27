@@ -1,4 +1,3 @@
-// Auth service - handles user registration, login, and token refresh
 const bcrypt = require("bcryptjs");
 const {
   generateToken,

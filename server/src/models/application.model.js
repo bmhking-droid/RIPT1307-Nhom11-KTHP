@@ -1,4 +1,3 @@
-// Application model - represents candidate applications with relationships to universities, majors, and documents
 module.exports = (sequelize, DataTypes) => {
   const Application = sequelize.define(
     "Application",

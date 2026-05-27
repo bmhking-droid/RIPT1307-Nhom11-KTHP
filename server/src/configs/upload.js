@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
   baseDir: path.join(__dirname, "../../uploads"),
 
-  maxFileSize: 5 * 1024 * 1024, // 5MB
+  maxFileSize: 5 * 1024 * 1024,
   maxFiles: 10,
 
   allowedMimeTypes: ["image/jpeg", "image/png", "image/jpg", "application/pdf"],
@@ -18,7 +18,6 @@ module.exports = {
     KHAC: "khac",
   },
 
-  // Hàm tạo tên file mới
   generateFileName: (originalName, documentType) => {
     const timestamp = Date.now();
     const ext = path.extname(originalName);

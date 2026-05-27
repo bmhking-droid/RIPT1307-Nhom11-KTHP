@@ -1,4 +1,3 @@
-// User routes for managing user profiles and admin controls
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");

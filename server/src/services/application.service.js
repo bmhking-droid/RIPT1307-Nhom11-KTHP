@@ -1,4 +1,3 @@
-// Application service - handles application creation, retrieval, and status management
 const repository = require("../repositories/application.repository");
 const { sequelize, University, Major, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory } = require("../models");
 const mailService = require("./mail.service");
@@ -20,7 +19,6 @@ exports.createApplication = async (userId, payload) => {
     const major = await Major.findOne({ where: { id: payload.majorId, universityId: payload.universityId } });
     if (!major) throw new Error("Major does not belong to university");
 
-    // BUG FIX #2: Use payload.roundId (correct field name in Application model), not admissionRoundId
     const round = await AdmissionRound.findByPk(payload.roundId);
     if (!round) throw new Error("Admission round not found");
 
@@ -32,7 +30,6 @@ exports.createApplication = async (userId, payload) => {
 
     const application = await repository.create({ ...payload, userId, status: APPLICATION_STATUS.PENDING }, transaction);
 
-    // BUG FIX #3: Map correct ApplicationDocument model fields (fileUrl, originalName) instead of (fileName, filePath, mimeType)
     if (Array.isArray(payload.documents) && payload.documents.length) {
       const documents = payload.documents.map((document) => ({
         applicationId: application.id,

@@ -1,4 +1,3 @@
-// Profile controller - manages user profile retrieval and updates with gender/address normalization
 const { successResponse, errorResponse } = require("../utils/response");
 const { Profile, User } = require("../models");
 

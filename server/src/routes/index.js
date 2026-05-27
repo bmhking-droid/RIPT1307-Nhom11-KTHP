@@ -13,7 +13,6 @@ const applicationRoutes = require("./application.routes");
 const reportRoutes = require("./report.routes");
 const settingRoutes = require("./setting.routes");
 
-// Mount routes
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/profiles", profileRoutes);

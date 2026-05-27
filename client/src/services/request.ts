@@ -2,7 +2,7 @@ import axios from 'axios';
 import { message } from 'antd';
 
 const request = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: process.env.UMI_APP_API_URL || 'http://localhost:5000/api',
   timeout: 10000,
   withCredentials: true,
 });

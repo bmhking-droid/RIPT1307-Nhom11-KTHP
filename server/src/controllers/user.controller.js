@@ -13,7 +13,6 @@ class UserController {
     }
   }
 
-  // GET /users - Lấy danh sách tất cả người dùng (Admin)
   async getAllUsers(req, res) {
     try {
       const users = await User.findAll({
@@ -28,7 +27,6 @@ class UserController {
     }
   }
 
-  // PATCH /users/:id/toggle-status - Khóa/Mở khóa tài khoản người dùng
   async toggleUserStatus(req, res) {
     try {
       const user = await User.findByPk(req.params.id);

@@ -6,7 +6,6 @@ module.exports = {
   up: async (queryInterface) => {
     const hashedPassword = await bcrypt.hash("user01@", 10);
 
-    // Tạo tài khoản user
     await queryInterface.bulkInsert("users", [
       {
         id: USER_ID,
@@ -20,7 +19,6 @@ module.exports = {
       },
     ]);
 
-    // Tạo profile tương ứng
     await queryInterface.bulkInsert("profiles", [
       {
         id: "c3d4e5f6-a7b8-9012-cdef-123456789012",

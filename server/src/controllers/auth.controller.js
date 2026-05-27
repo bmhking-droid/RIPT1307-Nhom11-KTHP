@@ -35,11 +35,11 @@ class AuthController {
       const result = await authService.login(req.body.email, req.body.password);
       return successResponse(res, result, "Đăng nhập thành công");
     } catch (error) {
-      // Tài khoản bị khóa → 403 Forbidden
+
       if (error.message === "Tài khoản của bạn đã bị khóa") {
         return errorResponse(res, error.message, 403);
       }
-      // Sai thông tin đăng nhập → 401 Unauthorized
+
       return errorResponse(res, error.message, 401);
     }
   }

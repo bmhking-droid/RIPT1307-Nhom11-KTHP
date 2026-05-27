@@ -16,5 +16,7 @@ export default defineConfig({
   routes: routes,
   proxy: proxy,
   
+  esbuildMinifyIIFE: true,
+  
   npmClient: 'npm',
 });

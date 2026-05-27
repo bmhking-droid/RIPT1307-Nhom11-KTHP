@@ -1,4 +1,3 @@
-// Report service - generates statistics and exports data for dashboard analytics
 const { sequelize } = require("../models");
 const repository = require("../repositories/report.repository");
 const ExcelJS = require("exceljs");
@@ -17,7 +16,6 @@ exports.getStatistics = async () => {
     total: row.total,
   }));
 
-  // BUG FIX: Calculate totals from byStatus array for correct dashboard display
   const totalApplications = byStatus.reduce((sum, row) => sum + Number(row.total), 0);
   const pendingApplications = byStatus.find((r) => r.status === "pending")?.total || 0;
   const approvedApplications = byStatus.find((r) => r.status === "approved")?.total || 0;

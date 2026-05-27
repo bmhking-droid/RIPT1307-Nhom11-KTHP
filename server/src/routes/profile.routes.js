@@ -5,14 +5,12 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const { validate } = require("../middlewares/validate.middleware");
 const { updateProfileSchema } = require("../validations/profile.validation");
 
-// GET /profiles/me - Lấy thông tin cá nhân từ Database
 router.get(
   "/me",
   authMiddleware,
   profileController.getProfile
 );
 
-// PUT /profiles/me - Cập nhật thông tin cá nhân
 router.put(
   "/me",
   authMiddleware,

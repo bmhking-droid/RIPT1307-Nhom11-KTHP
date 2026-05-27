@@ -1,13 +1,12 @@
 const Joi = require("joi");
 
-// Profile validation schema - supports both EN and VI gender values from frontend
 const updateProfileSchema = Joi.object({
   fullName: Joi.string().min(2).max(100).trim(),
   cccd: Joi.string()
     .length(12)
     .pattern(/^[0-9]+$/)
     .allow(null, ""),
-  // BUG FIX: Frontend sends 'dob' and 'province', gender may be 'male'/'female' or Vietnamese values
+
   dob: Joi.date().iso().allow(null, ""),
   gender: Joi.string().valid("Nam", "Nữ", "Khác", "male", "female").allow(null, ""),
   phone: Joi.string()

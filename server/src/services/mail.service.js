@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport(mailConfig.smtp);
 
 class MailService {
   async sendMail(to, subject, html) {
-    // Kiểm tra xem đã cấu hình SMTP đầy đủ chưa
+
     const isSmtpConfigured = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD;
 
     if (!isSmtpConfigured) {
@@ -68,7 +68,7 @@ ${html}`;
           <h3 style="color: #111827; margin-top: 0; font-size: 18px;">Xin chào thí sinh,</h3>
           <p>Chúc mừng bạn đã nộp hồ sơ đăng ký xét tuyển thành công trên cổng thông tin tuyển sinh <strong>UniAdmission</strong>!</p>
           <p>Thông tin chi tiết về hồ sơ nguyện vọng của bạn:</p>
-          
+
           <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; margin: 20px 0;">
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
@@ -173,7 +173,7 @@ ${html}`;
         <div style="color: #1F2937; line-height: 1.6; font-size: 15px;">
           <h3 style="color: #111827; margin-top: 0; font-size: 18px;">Xin chào thí sinh,</h3>
           <p>Hội đồng tuyển sinh trực tuyến <strong>UniAdmission</strong> đã tiến hành thẩm định thông tin và cập nhật trạng thái hồ sơ của bạn:</p>
-          
+
           <div style="text-align: center; margin: 25px 0;">
             <span style="background-color: ${statusBg}; color: ${statusColor}; padding: 8px 20px; border-radius: 10px; font-weight: 700; font-size: 15px; border: 1px solid ${statusBorder}; letter-spacing: 0.5px;">
               TRẠNG THÁI: ${statusText}

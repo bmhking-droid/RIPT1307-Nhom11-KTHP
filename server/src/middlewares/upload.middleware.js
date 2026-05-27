@@ -5,10 +5,10 @@ const { errorResponse } = require("../utils/response");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Chèn hàm xóa khoảng trắng phòng thủ lỗi gửi từ Frontend
+
     const rawType = req.body.documentType || "KHAC";
     const documentType = String(rawType).trim().toUpperCase();
-    
+
     const folder = uploadConfig.documentFolders[documentType] || "khac";
     const uploadPath = path.join(uploadConfig.baseDir, folder);
 
