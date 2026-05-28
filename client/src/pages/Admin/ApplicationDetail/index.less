@@ -1,0 +1,168 @@
+.detailPage {
+  width: 100%;
+}
+
+.summaryCard,
+.panelCard,
+.actionCard {
+  border-radius: 24px !important;
+  border: 1px solid #e0e7ff !important;
+  box-shadow: 0 18px 50px rgba(79, 70, 229, 0.08);
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  h2 {
+    margin: 6px 0 0;
+    color: #111827;
+    font-size: 30px;
+    font-weight: 900;
+  }
+}
+
+.label {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.statusTag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.metricBox {
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+
+  span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 900;
+  }
+}
+
+.mainGrid {
+  margin-top: 24px;
+}
+
+.panelCard {
+  margin-bottom: 24px;
+
+  :global(.ant-card-head-title) {
+    color: #111827;
+    font-weight: 900;
+  }
+
+  :global(.ant-descriptions-item-label) {
+    font-weight: 800;
+    background: #f8faff;
+  }
+}
+
+.actionCard {
+  margin-bottom: 24px;
+
+  :global(.ant-card-head-title) {
+    font-weight: 900;
+  }
+
+  :global(.ant-btn) {
+    height: 46px;
+    border-radius: 14px;
+    font-weight: 800;
+  }
+
+  :global(.ant-btn-primary) {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border: none;
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.2);
+  }
+}
+
+.documentList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.documentItem {
+  display: grid;
+  grid-template-columns: 48px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+}
+
+.documentIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 22px;
+}
+
+.documentInfo {
+  strong {
+    display: block;
+    color: #111827;
+    font-weight: 900;
+  }
+
+  span {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 13px;
+  }
+}
+
+.timelineItem {
+  strong {
+    display: block;
+    color: #111827;
+  }
+
+  span {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 12px;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #4b5563;
+  }
+}
+
+@media (max-width: 768px) {
+  .documentItem {
+    grid-template-columns: 48px 1fr;
+  }
+}

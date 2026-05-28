@@ -1,0 +1,7 @@
+{
+  "autoSendEmail": true,
+  "allowCandidateSubmit": true,
+  "systemName": "Hệ thống tuyển sinh trực tuyến",
+  "emailSenderName": "Phòng tuyển sinh",
+  "emailFooter": "Trân trọng, Phòng tuyển sinh"
+}

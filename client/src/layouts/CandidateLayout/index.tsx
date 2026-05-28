@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   AppstoreOutlined,
   FileAddOutlined,
@@ -12,6 +13,41 @@ import styles from './index.less';
 
 export default function CandidateLayout() {
   const location = useLocation();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (!token || !userStr) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      history.push('/login');
+      return;
+    }
+    try {
+      setUser(JSON.parse(userStr));
+    } catch {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      history.push('/login');
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('candidate_application_draft');
+    history.push('/login');
+  };
+
+  const fullName = user?.fullName || 'Thí sinh';
+  const email = user?.email || '';
+  const avatarLetter = fullName.charAt(0).toUpperCase();
+
+
 
   return (
     <div className={styles.candidateLayout}>
@@ -27,7 +63,15 @@ export default function CandidateLayout() {
 
         <Menu
           mode="inline"
-          selectedKeys={[location.pathname]}
+          selectedKeys={[
+            (() => {
+              const path = location.pathname;
+              if (path.startsWith('/candidate/dashboard')) return '/candidate/dashboard';
+              if (path.startsWith('/candidate/applications')) return '/candidate/applications';
+              if (path.startsWith('/candidate/profile')) return '/candidate/profile';
+              return path;
+            })()
+          ]}
           className={styles.menu}
           items={[
             {
@@ -58,11 +102,11 @@ export default function CandidateLayout() {
         />
 
         <div className={styles.sidebarFooter}>
-          <Avatar size={42}>TS</Avatar>
+          <Avatar size={42} style={{ backgroundColor: '#4F46E5' }}>{avatarLetter}</Avatar>
 
           <div className={styles.userInfo}>
-            <strong>Thí sinh demo</strong>
-            <span>candidate@email.com</span>
+            <strong>{fullName}</strong>
+            <span>{email}</span>
           </div>
         </div>
       </aside>
@@ -71,10 +115,10 @@ export default function CandidateLayout() {
         <header className={styles.topbar}>
           <div>
             <span className={styles.welcome}>Xin chào,</span>
-            <strong>Thí sinh demo</strong>
+            <strong>{fullName}</strong>
           </div>
 
-          <Button icon={<LogoutOutlined />} onClick={() => history.push('/')}>
+          <Button icon={<LogoutOutlined />} onClick={handleLogout}>
             Thoát
           </Button>
         </header>

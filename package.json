@@ -17,5 +17,8 @@
     "antd": "^6.3.7",
     "axios": "^1.16.0",
     "dayjs": "^1.11.20"
+  },
+  "devDependencies": {
+    "@umijs/plugins": "^4.6.55"
   }
 }
