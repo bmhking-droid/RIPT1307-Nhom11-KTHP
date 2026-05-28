@@ -5,9 +5,12 @@ USE online_admission;
 -- =====================================================================
 SET @user_super_admin = UUID();
 SET @user_admin_1     = UUID();
+SET @user_admin_2     = UUID();
 SET @user_candidate_1 = UUID();
 SET @user_candidate_2 = UUID();
 SET @user_candidate_3 = UUID();
+SET @user_candidate_4 = UUID();
+SET @user_candidate_5 = UUID();
 
 SET @uni_ptit         = UUID();
 SET @uni_hust         = UUID();
@@ -31,11 +34,13 @@ SET @app_3            = UUID();
 -- 1. CHÈN DỮ LIỆU BẢNG: USERS
 -- =====================================================================
 INSERT INTO users (id, email, password, role, isActive, emailVerified) VALUES
-(@user_super_admin, 'superadmin@admission.edu.vn', '$2b$10$EixZaYVK1fsby1Z7iG', 'ADMIN', TRUE, TRUE),
-(@user_admin_1, 'hanoi.admin@admission.edu.vn', '$2b$10$EixZaYVK1fsby1Z7iG', 'ADMIN', TRUE, TRUE),
-(@user_candidate_1, 'nguyenvana@gmail.com', '$2b$10$EixZaYVK1fsby1Z7iG', 'CANDIDATE', TRUE, TRUE),
-(@user_candidate_2, 'lethib@gmail.com', '$2b$10$EixZaYVK1fsby1Z7iG', 'CANDIDATE', TRUE, TRUE),
-(@user_candidate_3, 'tranvanc@gmail.com', '$2b$10$EixZaYVK1fsby1Z7iG', 'CANDIDATE', TRUE, FALSE);
+(@user_super_admin, 'superadmin@admission.edu.vn', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'ADMIN', TRUE, TRUE),
+(@user_admin_1, 'hanoi.admin@admission.edu.vn', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'ADMIN', TRUE, TRUE),
+(@user_admin_2, 'admin@admission.edu.vn', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'ADMIN', TRUE, TRUE),
+(@user_candidate_1, 'nguyenvana@gmail.com', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'CANDIDATE', TRUE, TRUE),
+(@user_candidate_2, 'lethib@gmail.com', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'CANDIDATE', TRUE, TRUE),
+(@user_candidate_3, 'tranvanc@gmail.com', '$2b$10$3VtQ4aHKvWrK8uvmawnEDOO416bC3tVotuJg3g0hyNBDqYFGZLpSe', 'CANDIDATE', TRUE, FALSE),
+(@user_candidate_4, 'user01@gmail.com', '$2b$10$MtpWpUxtbp3Blk6ljLp8d.xFM/MffLI1xB9Mq6HuOZHJFPgwBBFhu', 'CANDIDATE', TRUE, TRUE),
 
 -- =====================================================================
 -- 2. CHÈN DỮ LIỆU BẢNG: PROFILES
@@ -43,9 +48,11 @@ INSERT INTO users (id, email, password, role, isActive, emailVerified) VALUES
 INSERT INTO profiles (id, userId, fullName, cccd, dateOfBirth, gender, phone, address, priorityGroup) VALUES
 (UUID(), @user_super_admin, 'Nguyễn Hệ Thống', NULL, '1990-01-01', 'Nam', '0999888777', 'Quận Cầu Giấy, Hà Nội', 'KV3'),
 (UUID(), @user_admin_1, 'Trần Minh Hoàng', '001095001234', '1988-05-12', 'Nam', '0912345678', 'Quận Hai Bà Trưng, Hà Nội', 'KV3'),
+(UUID(), @user_admin_2, 'Quản trị viên Hệ thống', '001095009999', '1992-10-24', 'Nam', '0922334455', 'Quận Ba Đình, Hà Nội', 'KV3'),
 (UUID(), @user_candidate_1, 'Nguyễn Văn An', '001206009876', '2008-03-24', 'Nam', '0987654321', 'Huyện Thạch Thất, Hà Nội', 'KV2-NT'),
 (UUID(), @user_candidate_2, 'Lê Thị Bình', '038206004567', '2008-08-15', 'Nữ', '0977112233', 'Thành phố Vinh, Nghệ An', 'KV1'),
-(UUID(), @user_candidate_3, 'Trần Văn Cường', '024206001111', '2008-11-02', 'Nam', '0966554433', 'Thành phố Phủ Lý, Hà Nam', 'KV2');
+(UUID(), @user_candidate_3, 'Trần Văn Cường', '024206001111', '2008-11-02', 'Nam', '0966554433', 'Thành phố Phủ Lý, Hà Nam', 'KV2'),
+(UUID(), @user_candidate_4, 'Người dùng 01', '038206009999', '2008-05-18', 'Nữ', '0988776655', 'Thành phố Hà Tĩnh, Hà Tĩnh', 'KV2'),
 
 -- =====================================================================
 -- 3. CHÈN DỮ LIỆU BẢNG: UNIVERSITIES
