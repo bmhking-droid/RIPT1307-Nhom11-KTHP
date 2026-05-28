@@ -35,7 +35,7 @@ class AuthController {
       const result = await authService.login(req.body.email, req.body.password);
       return successResponse(res, result, "Đăng nhập thành công");
     } catch (error) {
-
+      console.error(`[ERROR LOGIN] Authentication failed for "${req.body?.email}":`, error.message || error);
       if (error.message === "Tài khoản của bạn đã bị khóa") {
         return errorResponse(res, error.message, 403);
       }

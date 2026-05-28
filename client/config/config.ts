@@ -16,6 +16,10 @@ export default defineConfig({
   routes: routes,
   proxy: proxy,
   
+  define: {
+    'process.env.UMI_APP_API_URL': process.env.UMI_APP_API_URL || 'https://online-admission-api.onrender.com/api',
+  },
+  
   esbuildMinifyIIFE: true,
   
   npmClient: 'npm',

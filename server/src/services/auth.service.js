@@ -37,21 +37,28 @@ class AuthService {
   }
 
   async login(email, password) {
+    console.log(`[DEBUG LOGIN] Attempting login for email: "${email}"`);
     const user = await User.findOne({
       where: { email },
       include: [{ model: Profile, as: "profile" }],
     });
 
     if (!user) {
+      console.log(`[DEBUG LOGIN] FAILED: No user found in database with email: "${email}"`);
       throw new Error("Thông tin đăng nhập không chính xác");
     }
 
+    console.log(`[DEBUG LOGIN] User found! ID: ${user.id}, Role: ${user.role}, IsActive: ${user.isActive}, Stored Hash: "${user.password}"`);
+
     if (user.isActive === false || user.isActive === 0) {
+      console.log(`[DEBUG LOGIN] FAILED: User account is locked (isActive = false/0)`);
       throw new Error("Tài khoản của bạn đã bị khóa");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log(`[DEBUG LOGIN] Password check: length=${password ? password.length : 0}. Bcrypt compare result: ${isMatch}`);
     if (!isMatch) {
+      console.log(`[DEBUG LOGIN] FAILED: Password mismatch for email: "${email}"`);
       throw new Error("Thông tin đăng nhập không chính xác");
     }
 
