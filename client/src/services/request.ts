@@ -38,5 +38,16 @@ request.interceptors.response.use(
   },
 );
 
+export const getFileUrl = (url: string): string => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  
+  const apiUrl = process.env.UMI_APP_API_URL || 'http://localhost:5000/api';
+  const backendBase = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+  
+  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  return `${backendBase}${cleanUrl}`;
+};
+
 export const apiRequest = request; 
 export default request;

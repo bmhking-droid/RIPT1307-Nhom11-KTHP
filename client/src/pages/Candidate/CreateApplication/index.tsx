@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Form, message, Space, Steps, notification } from 'antd';
+import { Button, Card, Form, message, Space, Steps, Modal } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import dayjs from 'dayjs';
@@ -302,34 +302,14 @@ export default function CreateApplication() {
 
       clearApplicationDraft();
 
-      notification.success({
-        message: 'Nộp hồ sơ thành công!',
-        description: 'Hồ sơ đăng ký xét tuyển trực tuyến của bạn đã được gửi thành công và đang chờ Phòng tuyển sinh phê duyệt.',
-        placement: 'topRight',
-        duration: 5,
+      Modal.success({
+        title: 'Nộp hồ sơ thành công!',
+        content: 'Hồ sơ xét tuyển của bạn đã được gửi thành công lên hệ thống và đang chờ duyệt.',
+        okText: 'Quay lại Trang tổng quan',
+        onOk: () => {
+          history.push('/candidate/dashboard');
+        },
       });
-      
-      try {
-        // 1. Chuyển hướng thí sinh về Bước 1 (Chọn nguyện vọng) ngay lập tức
-        setCurrent(0);
-        setFormValues({});
-      } catch (redirectErr) {
-        console.warn('Redirect error:', redirectErr);
-      }
-
-      try {
-        // 2. Reset các trường của form
-        form.resetFields();
-      } catch (resetErr) {
-        console.warn('Form reset error:', resetErr);
-      }
-
-      try {
-        // 3. Tải lại Profile sạch
-        await loadProfile();
-      } catch (loadErr) {
-        console.warn('Load profile error:', loadErr);
-      }
     } catch (error: any) {
       if (error?.errorFields) {
         message.warning('Vui lòng điền đầy đủ và chính xác thông tin bắt buộc.');

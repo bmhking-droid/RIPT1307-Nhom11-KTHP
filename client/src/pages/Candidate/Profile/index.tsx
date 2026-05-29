@@ -20,7 +20,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import request from '@/services/request';
+import request, { getFileUrl } from '@/services/request';
 
 import PageHeader from '@/components/PageHeader';
 import styles from './index.less';
@@ -316,7 +316,7 @@ export default function CandidateProfile() {
               <div className={styles.avatarWrap}>
                 <Avatar
                   size={120}
-                  src={sidebarInfo.avatarUrl ? `http://localhost:5000${sidebarInfo.avatarUrl}` : undefined}
+                  src={sidebarInfo.avatarUrl ? getFileUrl(sidebarInfo.avatarUrl) : undefined}
                   icon={<UserOutlined />}
                   style={{ border: '4px solid #e0e7ff', boxShadow: '0 8px 24px rgba(79, 70, 229, 0.12)' }}
                 />

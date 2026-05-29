@@ -14,39 +14,44 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === "SequelizeUniqueConstraintError") {
     let message = "Dữ liệu đã tồn tại trên hệ thống!";
-    const firstError = err.errors && err.errors[0];
-    if (firstError) {
-      const path = firstError.path;
-      const modelName = firstError.instance
-        ? (firstError.instance.constructor.name ||
-           (firstError.instance._modelOptions &&
-            firstError.instance._modelOptions.name &&
-            firstError.instance._modelOptions.name.singular))
-        : null;
+    if (err.message && err.message.includes("uk_one_application_per_round")) {
+      message = "Bạn đã nộp hồ sơ đăng ký xét tuyển cho đợt tuyển sinh này rồi! Mỗi đợt tuyển sinh chỉ được nộp duy nhất một hồ sơ.";
+    } else {
+      const firstError = err.errors && err.errors[0];
+      if (firstError) {
+        const path = firstError.path;
+        const modelName = firstError.instance
+          ? (firstError.instance.constructor.name ||
+             (firstError.instance._modelOptions &&
+              firstError.instance._modelOptions.name &&
+              firstError.instance._modelOptions.name.singular))
+          : null;
 
-      if (modelName === "University" && path === "code") {
-        message = "Mã trường đã tồn tại trên hệ thống!";
-      } else if (modelName === "Major" && path === "code") {
-        message = "Mã ngành đã tồn tại trên hệ thống!";
-      } else if (modelName === "User" && path === "email") {
-        message = "Email này đã được sử dụng!";
-      } else if (modelName === "Profile" && path === "cccd") {
-        message = "Số CCCD này đã tồn tại trên hệ thống!";
-      } else {
-
-        const table = err.parent && err.parent.table;
-        if (path === "code") {
-          if (table === "universities") {
-            message = "Mã trường đã tồn tại trên hệ thống!";
-          } else if (table === "majors") {
-            message = "Mã ngành đã tồn tại trên hệ thống!";
-          } else {
-            message = "Mã này đã tồn tại trên hệ thống!";
-          }
-        } else if (path === "email") {
+        if (modelName === "University" && path === "code") {
+          message = "Mã trường đã tồn tại trên hệ thống!";
+        } else if (modelName === "Major" && path === "code") {
+          message = "Mã ngành đã tồn tại trên hệ thống!";
+        } else if (modelName === "User" && path === "email") {
           message = "Email này đã được sử dụng!";
-        } else if (path === "cccd") {
+        } else if (modelName === "Profile" && path === "cccd") {
           message = "Số CCCD này đã tồn tại trên hệ thống!";
+        } else if (path === "uk_one_application_per_round" || (typeof path === "string" && path.includes("uk_one_application_per_round"))) {
+          message = "Bạn đã nộp hồ sơ đăng ký xét tuyển cho đợt tuyển sinh này rồi! Mỗi đợt tuyển sinh chỉ được nộp duy nhất một hồ sơ.";
+        } else {
+          const table = err.parent && err.parent.table;
+          if (path === "code") {
+            if (table === "universities") {
+              message = "Mã trường đã tồn tại trên hệ thống!";
+            } else if (table === "majors") {
+              message = "Mã ngành đã tồn tại trên hệ thống!";
+            } else {
+              message = "Mã này đã tồn tại trên hệ thống!";
+            }
+          } else if (path === "email") {
+            message = "Email này đã được sử dụng!";
+          } else if (path === "cccd") {
+            message = "Số CCCD này đã tồn tại trên hệ thống!";
+          }
         }
       }
     }

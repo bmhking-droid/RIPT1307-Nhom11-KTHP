@@ -45,14 +45,18 @@ exports.createApplication = async (userId, payload) => {
 
     await transaction.commit();
 
-    try {
-      const fullApp = await repository.findById(application.id);
-      if (fullApp?.User?.email) {
-        await mailService.sendApplicationSubmissionEmail(fullApp.User.email, fullApp);
-      }
-    } catch (mailError) {
-      console.error("Lỗi gửi mail xác nhận nộp hồ sơ:", mailError.message);
-    }
+    // Gửi email xác nhận nộp hồ sơ bất đồng bộ ở background, tránh chặn luồng HTTP khi SMTP kết nối chậm/nghẽn
+    repository.findById(application.id)
+      .then((fullApp) => {
+        if (fullApp?.User?.email) {
+          mailService.sendApplicationSubmissionEmail(fullApp.User.email, fullApp).catch((mailError) => {
+            console.error("Lỗi gửi mail xác nhận nộp hồ sơ:", mailError.message);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi truy vấn hồ sơ để gửi email xác nhận:", err.message);
+      });
 
     return application;
   } catch (error) {
@@ -86,31 +90,47 @@ exports.updateStatus = async (id, payload, adminId) => {
     if (!allowedStatuses.includes(payload.status)) throw new Error("Invalid status");
 
     const oldStatus = application.status;
-    await repository.updateStatus(application, { status: payload.status, rejectionReason: payload.rejectionReason || null }, transaction);
-    await ApplicationStatusHistory.create({ applicationId: application.id, oldStatus, newStatus: payload.status, changedBy: adminId }, { transaction });
+    await repository.updateStatus(application, { 
+      status: payload.status, 
+      reviewedAt: new Date(), 
+      reviewedBy: adminId 
+    }, transaction);
+    await ApplicationStatusHistory.create({ 
+      applicationId: application.id, 
+      oldStatus, 
+      newStatus: payload.status, 
+      reason: payload.rejectionReason || null, 
+      changedBy: adminId 
+    }, { transaction });
 
     await transaction.commit();
 
-    try {
-      const updatedApplication = await repository.findById(id);
-      if (updatedApplication?.User?.email) {
-        await mailService.sendApplicationStatusEmail(
-          updatedApplication.User.email,
-          payload.status,
-          payload.rejectionReason,
-          updatedApplication
-        );
-      } else if (application.user && application.user.email) {
-        await mailService.sendApplicationStatusEmail(
-          application.user.email,
-          payload.status,
-          payload.rejectionReason,
-          application
-        );
-      }
-    } catch (mailError) {
-      console.error("Failed to send status email:", mailError.message);
-    }
+    // Gửi email thông báo trạng thái bất đồng bộ ở background, tránh chặn luồng HTTP
+    repository.findById(id)
+      .then((updatedApplication) => {
+        if (updatedApplication?.User?.email) {
+          mailService.sendApplicationStatusEmail(
+            updatedApplication.User.email,
+            payload.status,
+            payload.rejectionReason,
+            updatedApplication
+          ).catch((mailError) => {
+            console.error("Failed to send status email:", mailError.message);
+          });
+        } else if (application.user && application.user.email) {
+          mailService.sendApplicationStatusEmail(
+            application.user.email,
+            payload.status,
+            payload.rejectionReason,
+            application
+          ).catch((mailError) => {
+            console.error("Failed to send status email:", mailError.message);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi truy vấn hồ sơ để gửi email trạng thái:", err.message);
+      });
 
     return application;
   } catch (error) {
