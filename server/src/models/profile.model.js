@@ -37,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      province: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
       priorityGroup: {
         type: DataTypes.STRING(50),
         allowNull: true,
