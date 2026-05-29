@@ -1,26 +1,21 @@
-const isGmail = (process.env.SMTP_HOST && process.env.SMTP_HOST.includes("gmail")) || 
-                (process.env.SMTP_USER && process.env.SMTP_USER.endsWith("@gmail.com"));
-
-const smtpConfig = isGmail 
-  ? {
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    }
-  : {
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT) === 465,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    };
-
 module.exports = {
-  smtp: smtpConfig,
+  smtp: {
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT) || 587,
+    // secure là true nếu cổng là 465, ngược lại là false (dùng STARTTLS cho 587)
+    secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT) === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+    tls: {
+      // Tối quan trọng trên môi trường Cloud: Bỏ qua lỗi chứng chỉ bảo mật để kết nối thông suốt
+      rejectUnauthorized: false,
+    },
+    connectionTimeout: 15000, // Giới hạn chờ kết nối tối đa 15 giây để tránh treo máy chủ
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
+  },
 
   defaults: {
     from: `"Hệ Thống Tuyển Sinh" <${process.env.SMTP_USER || "no-reply@example.com"}>`,
