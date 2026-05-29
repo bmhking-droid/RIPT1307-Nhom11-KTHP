@@ -231,7 +231,12 @@ export default function CreateApplication() {
       clearApplicationDraft();
 
       message.success('Nộp hồ sơ xét tuyển thành công. Hệ thống đang chờ phê duyệt.');
-      history.push('/candidate/applications');
+      
+      // Reset form and go back to Step 1 (current = 0)
+      form.resetFields();
+      setCurrent(0);
+      setFormValues({});
+      await loadProfile();
     } catch (error: any) {
       console.error("💥 Lỗi gửi đơn:", error);
       message.error(error?.response?.data?.message || 'Gửi hồ sơ xét tuyển thất bại. Vui lòng kiểm tra lại thông tin.');
