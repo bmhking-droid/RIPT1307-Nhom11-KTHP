@@ -7,6 +7,10 @@ const { TextArea } = Input;
 
 const provinceOptions = [
   'Thủ đô Hà Nội',
+  'Thành phố Hồ Chí Minh',
+  'Thành phố Đà Nẵng',
+  'Thành phố Hải Phòng',
+  'Thành phố Cần Thơ',
   'Thành phố Huế',
   'Tỉnh Lai Châu',
   'Tỉnh Điện Biên',
@@ -20,14 +24,10 @@ const provinceOptions = [
   'Tỉnh An Giang',
   'Tỉnh Bắc Ninh',
   'Tỉnh Cà Mau',
-  'Thành phố Cần Thơ',
-  'Thành phố Đà Nẵng',
   'Tỉnh Đắk Lắk',
   'Tỉnh Đồng Nai',
   'Tỉnh Đồng Tháp',
   'Tỉnh Gia Lai',
-  'Thành phố Hải Phòng',
-  'Thành phố Hồ Chí Minh',
   'Tỉnh Hưng Yên',
   'Tỉnh Khánh Hòa',
   'Tỉnh Lâm Đồng',
@@ -111,7 +111,7 @@ export default function CandidateInfoStep() {
           <Form.Item label="Tỉnh/Thành phố" name="province">
             <Select
               size="large"
-              placeholder="Chọn tỉnh/thành"
+              placeholder="Chọn Tỉnh/Thành phố"
               options={provinceOptions.map((item) => ({
                 label: item,
                 value: item,

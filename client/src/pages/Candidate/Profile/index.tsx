@@ -27,6 +27,10 @@ import styles from './index.less';
 
 const provinceOptions = [
   'Thủ đô Hà Nội',
+  'Thành phố Hồ Chí Minh',
+  'Thành phố Đà Nẵng',
+  'Thành phố Hải Phòng',
+  'Thành phố Cần Thơ',
   'Thành phố Huế',
   'Tỉnh Lai Châu',
   'Tỉnh Điện Biên',
@@ -40,14 +44,10 @@ const provinceOptions = [
   'Tỉnh An Giang',
   'Tỉnh Bắc Ninh',
   'Tỉnh Cà Mau',
-  'Thành phố Cần Thơ',
-  'Thành phố Đà Nẵng',
   'Tỉnh Đắk Lắk',
   'Tỉnh Đồng Nai',
   'Tỉnh Đồng Tháp',
   'Tỉnh Gia Lai',
-  'Thành phố Hải Phòng',
-  'Thành phố Hồ Chí Minh',
   'Tỉnh Hưng Yên',
   'Tỉnh Khánh Hòa',
   'Tỉnh Lâm Đồng',
@@ -81,7 +81,7 @@ export default function CandidateProfile() {
     const phoneValue = profileInfo.phone || '';
     let gender = profileInfo.gender || undefined;
     let mainAddress = profileInfo.address || '';
-    let province: string | undefined = profileInfo.province || undefined;
+    let province = profileInfo.province || undefined;
     const avatarUrl = profileInfo.avatarUrl || '';
     const score = profileInfo.score !== undefined && profileInfo.score !== null ? profileInfo.score : undefined;
     const priorityGroup = profileInfo.priorityGroup || 'NONE';
@@ -90,7 +90,7 @@ export default function CandidateProfile() {
     if (gender === 'Nam') gender = 'male';
     if (gender === 'Nữ') gender = 'female';
 
-    // Bóc tách dự phòng nếu trường province trống (dữ liệu cũ)
+    // Ưu tiên dùng trường province lưu riêng, nếu không có mới phân tách từ address
     if (!province && mainAddress) {
       const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
       if (foundProvince) {

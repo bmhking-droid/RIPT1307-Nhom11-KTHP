@@ -40,6 +40,15 @@ request.interceptors.response.use(
 
 export const getFileUrl = (url: string): string => {
   if (!url) return '';
+  
+  // Tự động chuyển đổi các liên kết mẫu giả lập sang file thật để Demo hoàn hảo
+  if (url.includes('api.admission.edu.vn')) {
+    if (url.endsWith('.pdf')) {
+      return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+    }
+    return 'https://placehold.co/600x800/e2e8f0/475569?text=Minh+Chung+Mau';
+  }
+
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   
   const apiUrl = process.env.UMI_APP_API_URL || 'http://localhost:5000/api';

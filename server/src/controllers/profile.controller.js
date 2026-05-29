@@ -5,6 +5,7 @@ class ProfileController {
   async getProfile(req, res) {
     try {
       const userId = req.user.id;
+      console.log(`🔍 [DEBUG GET PROFILE] Requesting profile for userId: "${userId}"`);
 
       const user = await User.findOne({
         where: { id: userId },
@@ -13,9 +14,11 @@ class ProfileController {
       });
 
       if (!user) {
+        console.log(`⚠️ [DEBUG GET PROFILE] User not found for id: "${userId}"`);
         return errorResponse(res, "Không tìm thấy người dùng", 404);
       }
 
+      console.log(`✅ [DEBUG GET PROFILE] Successfully loaded: ${JSON.stringify(user.profile || {})}`);
       return successResponse(res, user, "Lấy thông tin cá nhân thành công");
     } catch (error) {
       console.error("💥 [PROFILE GET ERROR]:", error.message);
@@ -26,6 +29,8 @@ class ProfileController {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
+      console.log(`📥 [DEBUG UPDATE PROFILE] Received body from userId "${userId}":`, JSON.stringify(req.body));
+      
       const { fullName, phone, gender, dob, province, address, avatarUrl, score, priorityGroup, cccd } = req.body;
 
       let dbGender = undefined;
@@ -55,6 +60,8 @@ class ProfileController {
         }
       });
 
+      console.log(`⚙️ [DEBUG UPDATE PROFILE] Sanitized profileData to save:`, JSON.stringify(profileData));
+
       // Tìm email của user làm fallback tên nếu chưa có
       let fallbackName = "Thí sinh";
       const user = await User.findByPk(userId);
@@ -72,7 +79,10 @@ class ProfileController {
       });
 
       if (!created) {
+        console.log(`💾 [DEBUG UPDATE PROFILE] Profile already exists, performing update...`);
         await profile.update(profileData);
+      } else {
+        console.log(`🆕 [DEBUG UPDATE PROFILE] New profile created successfully!`);
       }
 
       const updatedUser = await User.findOne({
@@ -81,9 +91,10 @@ class ProfileController {
         include: [{ model: Profile, as: "profile" }]
       });
 
+      console.log(`🎉 [DEBUG UPDATE PROFILE] Successfully saved & returning:`, JSON.stringify(updatedUser.profile || {}));
       return successResponse(res, updatedUser, "Cập nhật hồ sơ cá nhân thành công");
     } catch (error) {
-      console.error("💥 [PROFILE ERROR]:", error.message);
+      console.error("💥 [PROFILE UPDATE ERROR]:", error.message);
       return errorResponse(res, error.message, 500);
     }
   }
