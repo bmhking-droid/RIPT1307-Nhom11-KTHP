@@ -26,11 +26,40 @@ import PageHeader from '@/components/PageHeader';
 import styles from './index.less';
 
 const provinceOptions = [
-  'Hà Nội',
-  'TP Hồ Chí Minh',
-  'Đà Nẵng',
-  'Hải Phòng',
-  'Cần Thơ',
+  'Thủ đô Hà Nội',
+  'Thành phố Hồ Chí Minh',
+  'Thành phố Đà Nẵng',
+  'Thành phố Hải Phòng',
+  'Thành phố Cần Thơ',
+  'Thành phố Huế',
+  'Tỉnh Lai Châu',
+  'Tỉnh Điện Biên',
+  'Tỉnh Sơn La',
+  'Tỉnh Lạng Sơn',
+  'Tỉnh Quảng Ninh',
+  'Tỉnh Thanh Hóa',
+  'Tỉnh Nghệ An',
+  'Tỉnh Hà Tĩnh',
+  'Tỉnh Cao Bằng',
+  'Tỉnh An Giang',
+  'Tỉnh Bắc Ninh',
+  'Tỉnh Cà Mau',
+  'Tỉnh Đắk Lắk',
+  'Tỉnh Đồng Nai',
+  'Tỉnh Đồng Tháp',
+  'Tỉnh Gia Lai',
+  'Tỉnh Hưng Yên',
+  'Tỉnh Khánh Hòa',
+  'Tỉnh Lâm Đồng',
+  'Tỉnh Lào Cai',
+  'Tỉnh Ninh Bình',
+  'Tỉnh Phú Thọ',
+  'Tỉnh Quảng Ngãi',
+  'Tỉnh Quảng Trị',
+  'Tỉnh Tây Ninh',
+  'Tỉnh Thái Nguyên',
+  'Tỉnh Tuyên Quang',
+  'Tỉnh Vĩnh Long'
 ];
 
 export default function CandidateProfile() {
@@ -52,13 +81,14 @@ export default function CandidateProfile() {
     const phoneValue = profileInfo.phone || '';
     let gender = profileInfo.gender || undefined;
     let mainAddress = profileInfo.address || '';
-    let province: string | undefined = undefined;
+    let province = profileInfo.province || undefined;
     const avatarUrl = profileInfo.avatarUrl || '';
 
     if (gender === 'Nam') gender = 'male';
     if (gender === 'Nữ') gender = 'female';
 
-    if (mainAddress) {
+    // Ưu tiên dùng trường province lưu riêng, nếu không có mới phân tách từ address
+    if (!province && mainAddress) {
       const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
       if (foundProvince) {
         province = foundProvince;

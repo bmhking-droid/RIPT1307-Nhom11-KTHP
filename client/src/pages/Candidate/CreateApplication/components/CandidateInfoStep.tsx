@@ -1,9 +1,46 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { Col, Form, Input, InputNumber, Row } from 'antd';
+import { Col, Form, Input, InputNumber, Row, Select } from 'antd';
 import styles from '../index.less';
 import { phoneRules, emailRules, citizenIdRules } from '@/utils/validators';
 
 const { TextArea } = Input;
+
+const provinceOptions = [
+  'Thủ đô Hà Nội',
+  'Thành phố Hồ Chí Minh',
+  'Thành phố Đà Nẵng',
+  'Thành phố Hải Phòng',
+  'Thành phố Cần Thơ',
+  'Thành phố Huế',
+  'Tỉnh Lai Châu',
+  'Tỉnh Điện Biên',
+  'Tỉnh Sơn La',
+  'Tỉnh Lạng Sơn',
+  'Tỉnh Quảng Ninh',
+  'Tỉnh Thanh Hóa',
+  'Tỉnh Nghệ An',
+  'Tỉnh Hà Tĩnh',
+  'Tỉnh Cao Bằng',
+  'Tỉnh An Giang',
+  'Tỉnh Bắc Ninh',
+  'Tỉnh Cà Mau',
+  'Tỉnh Đắk Lắk',
+  'Tỉnh Đồng Nai',
+  'Tỉnh Đồng Tháp',
+  'Tỉnh Gia Lai',
+  'Tỉnh Hưng Yên',
+  'Tỉnh Khánh Hòa',
+  'Tỉnh Lâm Đồng',
+  'Tỉnh Lào Cai',
+  'Tỉnh Ninh Bình',
+  'Tỉnh Phú Thọ',
+  'Tỉnh Quảng Ngãi',
+  'Tỉnh Quảng Trị',
+  'Tỉnh Tây Ninh',
+  'Tỉnh Thái Nguyên',
+  'Tỉnh Tuyên Quang',
+  'Tỉnh Vĩnh Long'
+];
 
 export default function CandidateInfoStep() {
   return (
@@ -72,7 +109,14 @@ export default function CandidateInfoStep() {
         {/* 6. Tỉnh/Thành phố */}
         <Col xs={24} md={12}>
           <Form.Item label="Tỉnh/Thành phố" name="province">
-            <Input size="large" placeholder="Nhập Tỉnh/Thành phố" />
+            <Select
+              size="large"
+              placeholder="Chọn Tỉnh/Thành phố"
+              options={provinceOptions.map((item) => ({
+                label: item,
+                value: item,
+              }))}
+            />
           </Form.Item>
         </Col>
 

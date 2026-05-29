@@ -84,6 +84,7 @@ export default function CreateApplication() {
         if (!currentValues.email) profileFields.email = userData.email || '';
         if (!currentValues.phone) profileFields.phone = profile.phone || '';
         if (!currentValues.citizenId) profileFields.citizenId = profile.cccd || '';
+        if (!currentValues.province) profileFields.province = profile.province || '';
         if (!currentValues.address) profileFields.address = profile.address || '';
         if (!currentValues.gender) profileFields.gender = profile.gender || '';
         if (!currentValues.dob) profileFields.dob = rawDob ? dayjs(rawDob).format('DD/MM/YYYY') : '';
@@ -184,6 +185,38 @@ export default function CreateApplication() {
     try {
       await form.validateFields();
       const submitValues = form.getFieldsValue(true);
+
+      // Tự động đồng bộ thông tin cá nhân của thí sinh lên database profile
+      try {
+        const profilePayload = {
+          fullName: submitValues.fullName,
+          phone: submitValues.phone,
+          gender: submitValues.gender,
+          dob: submitValues.dob,
+          province: submitValues.province,
+          address: submitValues.address,
+          cccd: submitValues.citizenId,
+          score: submitValues.score,
+        };
+        
+        let formattedDob = null;
+        if (profilePayload.dob) {
+          const match = String(profilePayload.dob).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+          if (match) {
+            formattedDob = `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+          } else {
+            formattedDob = profilePayload.dob;
+          }
+        }
+
+        await request.put('/profiles/me', {
+          ...profilePayload,
+          dob: formattedDob,
+        });
+        console.log("✅ [PROFILE AUTO-SYNC] Đã tự động đồng bộ thông tin cá nhân lên cơ sở dữ liệu!");
+      } catch (profileError) {
+        console.error("💥 [PROFILE AUTO-SYNC ERROR]:", profileError);
+      }
 
       const documents = [
         {
