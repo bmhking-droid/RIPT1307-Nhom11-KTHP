@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
       through: "major_combination",
       foreignKey: "majorId",
       otherKey: "combinationId",
+      timestamps: false,
     });
   };
 
