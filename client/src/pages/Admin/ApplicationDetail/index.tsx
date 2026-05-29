@@ -17,6 +17,7 @@ import {
   getApplicationDetail,
   updateApplicationStatus,
 } from '@/services/admin';
+import { getFileUrl } from '@/services/request';
 
 export default function ApplicationDetailPage() {
   // Lấy ID dạng String/UUID từ URL
@@ -177,7 +178,7 @@ export default function ApplicationDetailPage() {
               actions={[
                 <a 
                   key="view" 
-                  href={file.fileUrl ? (file.fileUrl.startsWith('http') ? file.fileUrl : `http://localhost:5000${file.fileUrl}`) : '#'} 
+                  href={getFileUrl(file.fileUrl)} 
                   target="_blank" 
                   rel="noreferrer"
                 >

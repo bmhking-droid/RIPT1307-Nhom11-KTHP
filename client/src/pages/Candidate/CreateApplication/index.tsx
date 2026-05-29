@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Form, message, Space, Steps } from 'antd';
+import { Button, Card, Form, message, Space, Steps, Modal } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import dayjs from 'dayjs';
@@ -230,8 +230,14 @@ export default function CreateApplication() {
       await createApplication(payload);
       clearApplicationDraft();
 
-      message.success('Nộp hồ sơ xét tuyển thành công. Hệ thống đang chờ phê duyệt.');
-      history.push('/candidate/applications');
+      Modal.success({
+        title: 'Nộp hồ sơ thành công!',
+        content: 'Hồ sơ xét tuyển của bạn đã được gửi thành công lên hệ thống và đang chờ duyệt.',
+        okText: 'Quay lại Trang tổng quan',
+        onOk: () => {
+          history.push('/candidate/dashboard');
+        },
+      });
     } catch (error: any) {
       console.error("💥 Lỗi gửi đơn:", error);
       message.error(error?.response?.data?.message || 'Gửi hồ sơ xét tuyển thất bại. Vui lòng kiểm tra lại thông tin.');

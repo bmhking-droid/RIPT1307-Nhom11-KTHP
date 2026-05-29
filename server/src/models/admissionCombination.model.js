@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     AdmissionCombination.belongsToMany(models.Major, {
       through: "major_combination",
       foreignKey: "combinationId",
+      otherKey: "majorId",
     });
 
     AdmissionCombination.hasMany(models.Application, {
