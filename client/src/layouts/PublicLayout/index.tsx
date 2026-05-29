@@ -18,6 +18,7 @@ export default function PublicLayout() {
 
         <nav className={styles.nav}>
           <a onClick={() => history.push('/')}>Trang chủ</a>
+          <a onClick={() => history.push('/lookup')}>Tra cứu kết quả</a>
           <a>Trường/ngành</a>
           <a>Hướng dẫn</a>
           <a>FAQ</a>

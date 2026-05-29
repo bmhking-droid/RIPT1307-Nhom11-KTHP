@@ -54,6 +54,8 @@ export default function CandidateProfile() {
     let mainAddress = profileInfo.address || '';
     let province: string | undefined = undefined;
     const avatarUrl = profileInfo.avatarUrl || '';
+    const score = profileInfo.score !== undefined && profileInfo.score !== null ? profileInfo.score : undefined;
+    const priorityGroup = profileInfo.priorityGroup || undefined;
 
     if (gender === 'Nam') gender = 'male';
     if (gender === 'Nữ') gender = 'female';
@@ -78,6 +80,8 @@ export default function CandidateProfile() {
       province,
       address: mainAddress,
       dob: dobString ? dayjs(dobString) : undefined,
+      score,
+      priorityGroup,
     });
   };
 
@@ -234,6 +238,8 @@ export default function CandidateProfile() {
             dateOfBirth: payload.dob,
             address: updatedDataFromServer.profile?.address || formValues.address,
             avatarUrl: sidebarInfo.avatarUrl,
+            score: formValues.score,
+            priorityGroup: formValues.priorityGroup,
           }
         };
         localStorage.setItem('user', JSON.stringify(newLocalStorageUser));
@@ -384,6 +390,34 @@ export default function CandidateProfile() {
                         label: item,
                         value: item,
                       }))}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    label="Điểm xét tuyển"
+                    name="score"
+                    rules={[
+                      { pattern: /^[0-9]+(\.[0-9]{1,2})?$/, message: 'Điểm số phải là số dương hợp lệ!' }
+                    ]}
+                  >
+                    <Input size="large" type="number" step="0.01" placeholder="Nhập điểm xét tuyển (ví dụ: 25.5)" />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
+                  <Form.Item label="Đối tượng ưu tiên" name="priorityGroup">
+                    <Select
+                      size="large"
+                      placeholder="Chọn đối tượng ưu tiên"
+                      options={[
+                        { label: 'KV1 (Khu vực 1)', value: 'KV1' },
+                        { label: 'KV2 (Khu vực 2)', value: 'KV2' },
+                        { label: 'KV2-NT (Khu vực 2 - Nông thôn)', value: 'KV2-NT' },
+                        { label: 'KV3 (Khu vực 3)', value: 'KV3' },
+                      ]}
+                      allowClear
                     />
                   </Form.Item>
                 </Col>

@@ -77,3 +77,17 @@ exports.updateStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.publicLookup = async (req, res, next) => {
+  try {
+    const { searchKey } = req.query;
+    const applications = await applicationService.publicLookup(searchKey);
+
+    return res.json({
+      success: true,
+      data: applications,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

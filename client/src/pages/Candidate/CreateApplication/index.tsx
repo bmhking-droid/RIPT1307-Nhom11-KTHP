@@ -87,6 +87,8 @@ export default function CreateApplication() {
         if (!currentValues.address) profileFields.address = profile.address || '';
         if (!currentValues.gender) profileFields.gender = profile.gender || '';
         if (!currentValues.dob) profileFields.dob = rawDob ? dayjs(rawDob).format('DD/MM/YYYY') : '';
+        if (!currentValues.score) profileFields.score = profile.score !== undefined && profile.score !== null ? profile.score : undefined;
+        if (!currentValues.priorityGroup) profileFields.priorityGroup = profile.priorityGroup || undefined;
 
         if (Object.keys(profileFields).length > 0) {
           form.setFieldsValue(profileFields);
@@ -154,7 +156,7 @@ export default function CreateApplication() {
   const handleNext = async () => {
     const fieldsByStep = [
       ['universityId', 'major', 'admissionRound', 'combination'],
-      ['fullName', 'email', 'phone', 'citizenId', 'score'],
+      ['fullName', 'email', 'phone', 'citizenId', 'score', 'priorityGroup'],
       ['transcriptFile', 'citizenIdFile'],
       [],
     ];

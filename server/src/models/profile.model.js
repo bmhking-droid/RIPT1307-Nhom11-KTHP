@@ -45,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      score: {
+        type: DataTypes.DECIMAL(5, 2),
+        allowNull: true,
+      },
     },
     {
       tableName: "profiles",

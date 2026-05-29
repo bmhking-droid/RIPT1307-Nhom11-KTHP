@@ -26,7 +26,7 @@ class ProfileController {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { fullName, phone, gender, dob, province, address, avatarUrl } = req.body;
+      const { fullName, phone, gender, dob, province, address, avatarUrl, score, priorityGroup } = req.body;
 
       let dbGender = undefined;
       if (gender === 'male' || gender === 'Nam') dbGender = 'Nam';
@@ -42,7 +42,9 @@ class ProfileController {
         phone,
         gender: dbGender,
         dateOfBirth: dob || null,
-        address: combinedAddress
+        address: combinedAddress,
+        score: score !== undefined && score !== '' ? score : null,
+        priorityGroup: priorityGroup !== undefined && priorityGroup !== '' ? priorityGroup : null,
       };
 
       if (avatarUrl !== undefined) {

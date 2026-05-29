@@ -18,6 +18,10 @@ export default [
         path: '/',
         component: '@/pages/index',
       },
+      {
+        path: '/lookup',
+        component: '@/pages/Lookup',
+      },
     ],
   },
 

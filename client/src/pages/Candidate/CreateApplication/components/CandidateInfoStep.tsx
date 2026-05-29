@@ -1,5 +1,5 @@
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { Col, Form, Input, InputNumber, Row } from 'antd';
+import { Col, Form, Input, InputNumber, Row, Select } from 'antd';
 import styles from '../index.less';
 import { phoneRules, emailRules, citizenIdRules } from '@/utils/validators';
 
@@ -108,6 +108,23 @@ export default function CandidateInfoStep() {
               step={0.01}
               style={{ width: '100%' }}
               placeholder="Ví dụ: 25.75"
+            />
+          </Form.Item>
+        </Col>
+
+        {/* 10. Đối tượng ưu tiên */}
+        <Col xs={24} md={12}>
+          <Form.Item label="Đối tượng ưu tiên" name="priorityGroup">
+            <Select
+              size="large"
+              placeholder="Chọn đối tượng ưu tiên"
+              options={[
+                { label: 'KV1 (Khu vực 1)', value: 'KV1' },
+                { label: 'KV2 (Khu vực 2)', value: 'KV2' },
+                { label: 'KV2-NT (Khu vực 2 - Nông thôn)', value: 'KV2-NT' },
+                { label: 'KV3 (Khu vực 3)', value: 'KV3' },
+              ]}
+              allowClear
             />
           </Form.Item>
         </Col>

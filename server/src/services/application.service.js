@@ -1,5 +1,5 @@
 const repository = require("../repositories/application.repository");
-const { sequelize, University, Major, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory } = require("../models");
+const { sequelize, User, Profile, University, Major, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory } = require("../models");
 const mailService = require("./mail.service");
 const { APPLICATION_STATUS } = require("../utils/constants");
 const { getSettings } = require("../utils/settings");
@@ -117,4 +117,47 @@ exports.updateStatus = async (id, payload, adminId) => {
     await transaction.rollback();
     throw error;
   }
+};
+
+exports.publicLookup = async (searchKey) => {
+  if (!searchKey) throw new Error("Vui lòng cung cấp Email hoặc số CCCD!");
+  
+  const trimmedKey = String(searchKey).trim().toLowerCase();
+  
+  // 1. Tìm user theo email hoặc cccd
+  const user = await User.findOne({
+    include: [{
+      model: Profile,
+      as: "profile",
+      where: {
+        [sequelize.Sequelize.Op.or]: [
+          sequelize.Sequelize.where(
+            sequelize.Sequelize.fn('LOWER', sequelize.Sequelize.col('profile.cccd')),
+            trimmedKey
+          ),
+          sequelize.Sequelize.where(
+            sequelize.Sequelize.fn('LOWER', sequelize.Sequelize.col('User.email')),
+            trimmedKey
+          )
+        ]
+      }
+    }]
+  });
+  
+  if (!user) {
+    // Dự phòng tìm kiếm chỉ bằng Email trong User
+    const userByEmail = await User.findOne({
+      where: sequelize.Sequelize.where(
+        sequelize.Sequelize.fn('LOWER', sequelize.Sequelize.col('email')),
+        trimmedKey
+      ),
+      include: [{ model: Profile, as: "profile" }]
+    });
+    if (!userByEmail) {
+      throw new Error("Không tìm thấy thông tin thí sinh khớp với từ khóa tìm kiếm!");
+    }
+    return await exports.getMyApplications(userByEmail.id);
+  }
+  
+  return await exports.getMyApplications(user.id);
 };

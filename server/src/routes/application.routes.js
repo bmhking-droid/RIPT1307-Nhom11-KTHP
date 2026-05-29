@@ -29,6 +29,8 @@ router.get(
   controller.getMyApplications,
 );
 
+router.get("/public/lookup", controller.publicLookup);
+
 router.get(
   "/:id",
   authMiddleware,
