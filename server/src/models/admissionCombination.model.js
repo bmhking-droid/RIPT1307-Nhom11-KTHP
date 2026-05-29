@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       through: "major_combination",
       foreignKey: "combinationId",
       otherKey: "majorId",
+      timestamps: false,
     });
 
     AdmissionCombination.hasMany(models.Application, {
