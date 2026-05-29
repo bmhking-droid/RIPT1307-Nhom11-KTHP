@@ -57,10 +57,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Major.belongsToMany(models.AdmissionCombination, {
-      through: "major_combination",
+      through: models.MajorCombination,
       foreignKey: "majorId",
       otherKey: "combinationId",
-      timestamps: false,
     });
   };
 

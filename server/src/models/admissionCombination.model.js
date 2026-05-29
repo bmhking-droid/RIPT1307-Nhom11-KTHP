@@ -30,10 +30,9 @@ module.exports = (sequelize, DataTypes) => {
 
   AdmissionCombination.associate = (models) => {
     AdmissionCombination.belongsToMany(models.Major, {
-      through: "major_combination",
+      through: models.MajorCombination,
       foreignKey: "combinationId",
       otherKey: "majorId",
-      timestamps: false,
     });
 
     AdmissionCombination.hasMany(models.Application, {
