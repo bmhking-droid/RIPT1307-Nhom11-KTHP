@@ -45,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         allowNull: true,
       },
+      score: {
+        type: DataTypes.DECIMAL(5, 2),
+        allowNull: true,
+      },
       avatarUrl: {
         type: DataTypes.STRING,
         allowNull: true,
