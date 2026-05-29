@@ -3,7 +3,8 @@ const Joi = require("joi");
 const updateProfileSchema = Joi.object({
   fullName: Joi.string().min(2).max(100).trim(),
   cccd: Joi.string()
-    .length(12)
+    .min(9)
+    .max(12)
     .pattern(/^[0-9]+$/)
     .allow(null, ""),
 

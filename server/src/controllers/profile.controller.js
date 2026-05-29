@@ -26,23 +26,20 @@ class ProfileController {
   async updateProfile(req, res) {
     try {
       const userId = req.user.id;
-      const { fullName, phone, gender, dob, province, address, avatarUrl, score, priorityGroup } = req.body;
+      const { fullName, phone, gender, dob, province, address, avatarUrl, score, priorityGroup, cccd } = req.body;
 
       let dbGender = undefined;
       if (gender === 'male' || gender === 'Nam') dbGender = 'Nam';
       if (gender === 'female' || gender === 'Nữ') dbGender = 'Nữ';
-
-      let combinedAddress = address || "";
-      if (province && !combinedAddress.includes(province)) {
-        combinedAddress = combinedAddress ? `${combinedAddress}, ${province}` : province;
-      }
 
       const profileData = {
         fullName,
         phone,
         gender: dbGender,
         dateOfBirth: dob || null,
-        address: combinedAddress,
+        province: province || null,
+        address: address || null,
+        cccd: cccd !== undefined && cccd !== '' ? cccd : null,
         score: score !== undefined && score !== '' ? score : null,
         priorityGroup: priorityGroup !== undefined && priorityGroup !== '' ? priorityGroup : null,
       };

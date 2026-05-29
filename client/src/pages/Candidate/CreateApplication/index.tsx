@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Form, message, Space, Steps } from 'antd';
+import { Button, Card, Form, message, Space, Steps, notification } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import dayjs from 'dayjs';
@@ -23,9 +23,47 @@ import ReviewStep from './components/ReviewStep';
 
 import styles from './index.less';
 
+const provinceOptions = [
+  'Thủ đô Hà Nội',
+  'Thành phố Huế',
+  'Tỉnh Lai Châu',
+  'Tỉnh Điện Biên',
+  'Tỉnh Sơn La',
+  'Tỉnh Lạng Sơn',
+  'Tỉnh Quảng Ninh',
+  'Tỉnh Thanh Hóa',
+  'Tỉnh Nghệ An',
+  'Tỉnh Hà Tĩnh',
+  'Tỉnh Cao Bằng',
+  'Tỉnh An Giang',
+  'Tỉnh Bắc Ninh',
+  'Tỉnh Cà Mau',
+  'Thành phố Cần Thơ',
+  'Thành phố Đà Nẵng',
+  'Tỉnh Đắk Lắk',
+  'Tỉnh Đồng Nai',
+  'Tỉnh Đồng Tháp',
+  'Tỉnh Gia Lai',
+  'Thành phố Hải Phòng',
+  'Thành phố Hồ Chí Minh',
+  'Tỉnh Hưng Yên',
+  'Tỉnh Khánh Hòa',
+  'Tỉnh Lâm Đồng',
+  'Tỉnh Lào Cai',
+  'Tỉnh Ninh Bình',
+  'Tỉnh Phú Thọ',
+  'Tỉnh Quảng Ngãi',
+  'Tỉnh Quảng Trị',
+  'Tỉnh Tây Ninh',
+  'Tỉnh Thái Nguyên',
+  'Tỉnh Tuyên Quang',
+  'Tỉnh Vĩnh Long'
+];
+
 export default function CreateApplication() {
   const [form] = Form.useForm();
   const [current, setCurrent] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
   const [universities, setUniversities] = useState<any[]>([]);
   const [majors, setMajors] = useState<any[]>([]);
@@ -76,6 +114,17 @@ export default function CreateApplication() {
         const profile = userData.profile || {};
         const rawDob = profile.dateOfBirth;
 
+        let mainAddress = profile.address || '';
+        let province: string | undefined = profile.province || undefined;
+        // Bóc tách dự phòng nếu trường province trống (dữ liệu cũ)
+        if (!province && mainAddress) {
+          const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
+          if (foundProvince) {
+            province = foundProvince;
+            mainAddress = mainAddress.replace(new RegExp(`,?\\s*${foundProvince}$`), '');
+          }
+        }
+
         // Chỉ set những field mà form chưa có giá trị (ưu tiên draft)
         const currentValues = form.getFieldsValue(true);
         const profileFields: any = {};
@@ -84,11 +133,12 @@ export default function CreateApplication() {
         if (!currentValues.email) profileFields.email = userData.email || '';
         if (!currentValues.phone) profileFields.phone = profile.phone || '';
         if (!currentValues.citizenId) profileFields.citizenId = profile.cccd || '';
-        if (!currentValues.address) profileFields.address = profile.address || '';
+        if (!currentValues.province) profileFields.province = province || undefined;
+        if (!currentValues.address) profileFields.address = mainAddress || '';
         if (!currentValues.gender) profileFields.gender = profile.gender || '';
         if (!currentValues.dob) profileFields.dob = rawDob ? dayjs(rawDob).format('DD/MM/YYYY') : '';
         if (!currentValues.score) profileFields.score = profile.score !== undefined && profile.score !== null ? profile.score : undefined;
-        if (!currentValues.priorityGroup) profileFields.priorityGroup = profile.priorityGroup || undefined;
+        if (!currentValues.priorityGroup) profileFields.priorityGroup = profile.priorityGroup || 'NONE';
 
         if (Object.keys(profileFields).length > 0) {
           form.setFieldsValue(profileFields);
@@ -184,6 +234,7 @@ export default function CreateApplication() {
 
   const handleSubmitForm = async () => {
     try {
+      setSubmitting(true);
       await form.validateFields();
       const submitValues = form.getFieldsValue(true);
 
@@ -230,18 +281,64 @@ export default function CreateApplication() {
       console.log("🚀 [PAYLOAD CHECK] Gói tin sạch gửi lên Backend:", payload);
 
       await createApplication(payload);
+
+      // Tự động đồng bộ thông tin cá nhân vừa nhập về Hồ sơ của thí sinh trên DB
+      try {
+        const profilePayload = {
+          fullName: submitValues.fullName,
+          phone: submitValues.phone,
+          gender: submitValues.gender === 'male' || submitValues.gender === 'Nam' ? 'male' : 'female',
+          dob: submitValues.dob ? dayjs(submitValues.dob, 'DD/MM/YYYY').format('YYYY-MM-DD') : null,
+          province: submitValues.province || null,
+          address: submitValues.address || '',
+          score: submitValues.score,
+          priorityGroup: submitValues.priorityGroup || 'NONE',
+          cccd: submitValues.citizenId,
+        };
+        await request.put('/profiles/me', profilePayload);
+      } catch (profileErr) {
+        console.warn('Không thể tự động đồng bộ thông tin cá nhân về Hồ sơ:', profileErr);
+      }
+
       clearApplicationDraft();
 
-      message.success('Nộp hồ sơ xét tuyển thành công. Hệ thống đang chờ phê duyệt.');
+      notification.success({
+        message: 'Nộp hồ sơ thành công!',
+        description: 'Hồ sơ đăng ký xét tuyển trực tuyến của bạn đã được gửi thành công và đang chờ Phòng tuyển sinh phê duyệt.',
+        placement: 'topRight',
+        duration: 5,
+      });
       
-      // Reset form and go back to Step 1 (current = 0)
-      form.resetFields();
-      setCurrent(0);
-      setFormValues({});
-      await loadProfile();
+      try {
+        // 1. Chuyển hướng thí sinh về Bước 1 (Chọn nguyện vọng) ngay lập tức
+        setCurrent(0);
+        setFormValues({});
+      } catch (redirectErr) {
+        console.warn('Redirect error:', redirectErr);
+      }
+
+      try {
+        // 2. Reset các trường của form
+        form.resetFields();
+      } catch (resetErr) {
+        console.warn('Form reset error:', resetErr);
+      }
+
+      try {
+        // 3. Tải lại Profile sạch
+        await loadProfile();
+      } catch (loadErr) {
+        console.warn('Load profile error:', loadErr);
+      }
     } catch (error: any) {
-      console.error("💥 Lỗi gửi đơn:", error);
-      message.error(error?.response?.data?.message || 'Gửi hồ sơ xét tuyển thất bại. Vui lòng kiểm tra lại thông tin.');
+      if (error?.errorFields) {
+        message.warning('Vui lòng điền đầy đủ và chính xác thông tin bắt buộc.');
+      } else {
+        console.error("💥 Lỗi gửi đơn:", error);
+        message.error(error?.response?.data?.message || 'Gửi hồ sơ xét tuyển thất bại. Vui lòng kiểm tra lại thông tin.');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -353,6 +450,7 @@ export default function CreateApplication() {
                   type="primary"
                   size="large"
                   icon={<SendOutlined />}
+                  loading={submitting}
                   onClick={handleSubmitForm}
                 >
                   Gửi hồ sơ xét tuyển

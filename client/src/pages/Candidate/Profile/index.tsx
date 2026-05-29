@@ -26,11 +26,40 @@ import PageHeader from '@/components/PageHeader';
 import styles from './index.less';
 
 const provinceOptions = [
-  'Hà Nội',
-  'TP Hồ Chí Minh',
-  'Đà Nẵng',
-  'Hải Phòng',
-  'Cần Thơ',
+  'Thủ đô Hà Nội',
+  'Thành phố Huế',
+  'Tỉnh Lai Châu',
+  'Tỉnh Điện Biên',
+  'Tỉnh Sơn La',
+  'Tỉnh Lạng Sơn',
+  'Tỉnh Quảng Ninh',
+  'Tỉnh Thanh Hóa',
+  'Tỉnh Nghệ An',
+  'Tỉnh Hà Tĩnh',
+  'Tỉnh Cao Bằng',
+  'Tỉnh An Giang',
+  'Tỉnh Bắc Ninh',
+  'Tỉnh Cà Mau',
+  'Thành phố Cần Thơ',
+  'Thành phố Đà Nẵng',
+  'Tỉnh Đắk Lắk',
+  'Tỉnh Đồng Nai',
+  'Tỉnh Đồng Tháp',
+  'Tỉnh Gia Lai',
+  'Thành phố Hải Phòng',
+  'Thành phố Hồ Chí Minh',
+  'Tỉnh Hưng Yên',
+  'Tỉnh Khánh Hòa',
+  'Tỉnh Lâm Đồng',
+  'Tỉnh Lào Cai',
+  'Tỉnh Ninh Bình',
+  'Tỉnh Phú Thọ',
+  'Tỉnh Quảng Ngãi',
+  'Tỉnh Quảng Trị',
+  'Tỉnh Tây Ninh',
+  'Tỉnh Thái Nguyên',
+  'Tỉnh Tuyên Quang',
+  'Tỉnh Vĩnh Long'
 ];
 
 export default function CandidateProfile() {
@@ -52,15 +81,17 @@ export default function CandidateProfile() {
     const phoneValue = profileInfo.phone || '';
     let gender = profileInfo.gender || undefined;
     let mainAddress = profileInfo.address || '';
-    let province: string | undefined = undefined;
+    let province: string | undefined = profileInfo.province || undefined;
     const avatarUrl = profileInfo.avatarUrl || '';
     const score = profileInfo.score !== undefined && profileInfo.score !== null ? profileInfo.score : undefined;
-    const priorityGroup = profileInfo.priorityGroup || undefined;
+    const priorityGroup = profileInfo.priorityGroup || 'NONE';
+    const cccd = profileInfo.cccd || '';
 
     if (gender === 'Nam') gender = 'male';
     if (gender === 'Nữ') gender = 'female';
 
-    if (mainAddress) {
+    // Bóc tách dự phòng nếu trường province trống (dữ liệu cũ)
+    if (!province && mainAddress) {
       const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
       if (foundProvince) {
         province = foundProvince;
@@ -82,6 +113,7 @@ export default function CandidateProfile() {
       dob: dobString ? dayjs(dobString) : undefined,
       score,
       priorityGroup,
+      cccd,
     });
   };
 
@@ -236,10 +268,12 @@ export default function CandidateProfile() {
             phone: formValues.phone,
             gender: formValues.gender === 'male' ? 'Nam' : 'Nữ',
             dateOfBirth: payload.dob,
+            province: updatedDataFromServer.profile?.province || formValues.province,
             address: updatedDataFromServer.profile?.address || formValues.address,
             avatarUrl: sidebarInfo.avatarUrl,
             score: formValues.score,
             priorityGroup: formValues.priorityGroup,
+            cccd: formValues.cccd,
           }
         };
         localStorage.setItem('user', JSON.stringify(newLocalStorageUser));
@@ -382,6 +416,18 @@ export default function CandidateProfile() {
                 </Col>
 
                 <Col xs={24} md={12}>
+                  <Form.Item
+                    label="Số CCCD"
+                    name="cccd"
+                    rules={[
+                      { pattern: /^[0-9]{9,12}$/, message: 'Số CCCD phải chứa từ 9 đến 12 số!' }
+                    ]}
+                  >
+                    <Input size="large" maxLength={12} placeholder="Nhập số CCCD" />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={12}>
                   <Form.Item label="Tỉnh/Thành phố" name="province">
                     <Select
                       size="large"
@@ -412,6 +458,7 @@ export default function CandidateProfile() {
                       size="large"
                       placeholder="Chọn đối tượng ưu tiên"
                       options={[
+                        { label: 'Không thuộc diện ưu tiên', value: 'NONE' },
                         { label: 'KV1 (Khu vực 1)', value: 'KV1' },
                         { label: 'KV2 (Khu vực 2)', value: 'KV2' },
                         { label: 'KV2-NT (Khu vực 2 - Nông thôn)', value: 'KV2-NT' },

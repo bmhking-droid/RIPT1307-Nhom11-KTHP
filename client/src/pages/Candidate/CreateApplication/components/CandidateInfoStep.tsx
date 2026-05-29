@@ -5,6 +5,43 @@ import { phoneRules, emailRules, citizenIdRules } from '@/utils/validators';
 
 const { TextArea } = Input;
 
+const provinceOptions = [
+  'Thủ đô Hà Nội',
+  'Thành phố Huế',
+  'Tỉnh Lai Châu',
+  'Tỉnh Điện Biên',
+  'Tỉnh Sơn La',
+  'Tỉnh Lạng Sơn',
+  'Tỉnh Quảng Ninh',
+  'Tỉnh Thanh Hóa',
+  'Tỉnh Nghệ An',
+  'Tỉnh Hà Tĩnh',
+  'Tỉnh Cao Bằng',
+  'Tỉnh An Giang',
+  'Tỉnh Bắc Ninh',
+  'Tỉnh Cà Mau',
+  'Thành phố Cần Thơ',
+  'Thành phố Đà Nẵng',
+  'Tỉnh Đắk Lắk',
+  'Tỉnh Đồng Nai',
+  'Tỉnh Đồng Tháp',
+  'Tỉnh Gia Lai',
+  'Thành phố Hải Phòng',
+  'Thành phố Hồ Chí Minh',
+  'Tỉnh Hưng Yên',
+  'Tỉnh Khánh Hòa',
+  'Tỉnh Lâm Đồng',
+  'Tỉnh Lào Cai',
+  'Tỉnh Ninh Bình',
+  'Tỉnh Phú Thọ',
+  'Tỉnh Quảng Ngãi',
+  'Tỉnh Quảng Trị',
+  'Tỉnh Tây Ninh',
+  'Tỉnh Thái Nguyên',
+  'Tỉnh Tuyên Quang',
+  'Tỉnh Vĩnh Long'
+];
+
 export default function CandidateInfoStep() {
   return (
     <div className={styles.stepContent}>
@@ -72,7 +109,14 @@ export default function CandidateInfoStep() {
         {/* 6. Tỉnh/Thành phố */}
         <Col xs={24} md={12}>
           <Form.Item label="Tỉnh/Thành phố" name="province">
-            <Input size="large" placeholder="Nhập Tỉnh/Thành phố" />
+            <Select
+              size="large"
+              placeholder="Chọn tỉnh/thành"
+              options={provinceOptions.map((item) => ({
+                label: item,
+                value: item,
+              }))}
+            />
           </Form.Item>
         </Col>
 
@@ -119,6 +163,7 @@ export default function CandidateInfoStep() {
               size="large"
               placeholder="Chọn đối tượng ưu tiên"
               options={[
+                { label: 'Không thuộc diện ưu tiên', value: 'NONE' },
                 { label: 'KV1 (Khu vực 1)', value: 'KV1' },
                 { label: 'KV2 (Khu vực 2)', value: 'KV2' },
                 { label: 'KV2-NT (Khu vực 2 - Nông thôn)', value: 'KV2-NT' },
