@@ -1,13 +1,26 @@
+const isGmail = (process.env.SMTP_HOST && process.env.SMTP_HOST.includes("gmail")) || 
+                (process.env.SMTP_USER && process.env.SMTP_USER.endsWith("@gmail.com"));
+
+const smtpConfig = isGmail 
+  ? {
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    }
+  : {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT) === 465,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    };
+
 module.exports = {
-  smtp: {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === "true" || parseInt(process.env.SMTP_PORT) === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  },
+  smtp: smtpConfig,
 
   defaults: {
     from: `"Hệ Thống Tuyển Sinh" <${process.env.SMTP_USER || "no-reply@example.com"}>`,
