@@ -1,0 +1,237 @@
+.floatingFab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+
+    .fabBtn {
+      box-shadow: 0 12px 28px rgba(79, 70, 229, 0.4);
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    }
+
+    .fabLabel {
+      opacity: 1;
+      transform: translateY(0);
+      background-color: #1f2937;
+      color: #ffffff;
+    }
+  }
+}
+
+.fabBtn {
+  width: 56px !important;
+  height: 56px !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  :global(.anticon) {
+    font-size: 24px !important;
+    color: #ffffff !important;
+  }
+}
+
+.fabLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  background-color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.sandboxDrawer {
+  :global(.ant-drawer-header) {
+    border-bottom: 1px solid #f3f4f6;
+    background-color: #faf5ff;
+  }
+
+  :global(.ant-drawer-body) {
+    padding: 16px;
+    background-color: #fcfbfe;
+  }
+}
+
+.drawerTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e1b4b;
+  font-weight: 700;
+  font-size: 16px;
+
+  :global(.anticon) {
+    color: #8b5cf6;
+    font-size: 18px;
+  }
+}
+
+.emptyInbox {
+  text-align: center;
+  padding: 80px 24px;
+  color: #6b7280;
+
+  .emptyIcon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 13px;
+    color: #9ca3af;
+    max-width: 280px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
+  }
+}
+
+.emailItem {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 14px 16px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+
+  &:hover {
+    border-color: #a78bfa;
+    background-color: #fdfcff;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.06);
+    transform: translateY(-2px);
+
+    .emailClickIndicator {
+      opacity: 1;
+      transform: translateX(4px);
+    }
+  }
+}
+
+.emailItemContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.emailItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.emailRecipient {
+  font-weight: 700;
+  color: #4b5563;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emailDate {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.emailSubjectText {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+.emailClickIndicator {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8b5cf6;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.emailDetailView {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.detailHeaderCard {
+  border-radius: 12px !important;
+  border: 1px solid #edf2f7 !important;
+  margin-bottom: 16px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+
+  :global(.ant-card-body) {
+    padding: 14px 18px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.headerItem {
+  font-size: 13px;
+  color: #4b5563;
+
+  strong {
+    color: #1f2937;
+    margin-right: 8px;
+    display: inline-block;
+    width: 70px;
+  }
+}
+
+.emailSubject {
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.emailTime {
+  color: #718096;
+}
+
+.emailIframeContainer {
+  flex: 1;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  min-height: 480px;
+}
+
+.emailIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

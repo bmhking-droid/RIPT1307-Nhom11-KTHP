@@ -36,6 +36,63 @@ app.get("/", (req, res) => {
   res.json({ message: "Online Admission API is running" });
 });
 
+// Endpoint cho Hộp thư thử nghiệm (Email Sandbox)
+app.get("/api/emails-log", (req, res) => {
+  try {
+    const fs = require("fs");
+    const emailLogsDir = path.join(__dirname, "../logs/emails");
+    if (!fs.existsSync(emailLogsDir)) {
+      return res.json({ success: true, data: [] });
+    }
+
+    const files = fs.readdirSync(emailLogsDir);
+    const emails = files
+      .filter(file => file.endsWith(".html"))
+      .map(file => {
+        const filePath = path.join(emailLogsDir, file);
+        const content = fs.readFileSync(filePath, "utf8");
+        
+        // Trích xuất metadata từ comment tiêu đề ở đầu file
+        const toMatch = content.match(/GỬI ĐẾN:\s*([^\n]+)/);
+        const subjectMatch = content.match(/TIÊU ĐỀ:\s*([^\n]+)/);
+        const timeMatch = content.match(/THỜI GIAN:\s*([^\n]+)/);
+
+        return {
+          filename: file,
+          to: toMatch ? toMatch[1].trim() : "unknown",
+          subject: subjectMatch ? subjectMatch[1].trim() : "Không tiêu đề",
+          time: timeMatch ? timeMatch[1].trim() : new Date().toLocaleString(),
+          html: content
+        };
+      })
+      .sort((a, b) => {
+        const timeA = parseInt(a.filename.split("_")[1]) || 0;
+        const timeB = parseInt(b.filename.split("_")[1]) || 0;
+        return timeB - timeA;
+      });
+
+    return res.json({ success: true, data: emails });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.delete("/api/emails-log", (req, res) => {
+  try {
+    const fs = require("fs");
+    const emailLogsDir = path.join(__dirname, "../logs/emails");
+    if (fs.existsSync(emailLogsDir)) {
+      const files = fs.readdirSync(emailLogsDir);
+      files.forEach(file => {
+        fs.unlinkSync(path.join(emailLogsDir, file));
+      });
+    }
+    return res.json({ success: true, message: "Đã dọn dẹp hộp thư thử nghiệm thành công!" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 app.use("/api", routes);
 
 app.use(notFound);
