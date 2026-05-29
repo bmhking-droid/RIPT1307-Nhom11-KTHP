@@ -161,7 +161,7 @@ export default function CandidateProfile() {
         const formValues = form.getFieldsValue();
         const payload = {
           ...formValues,
-          dob: formValues.dob ? formValues.dob.format('YYYY-MM-DD') : null,
+          dob: formValues.dob && typeof formValues.dob.format === 'function' ? formValues.dob.format('YYYY-MM-DD') : (formValues.dob || null),
           avatarUrl: newAvatarUrl,
         };
         
@@ -208,7 +208,7 @@ export default function CandidateProfile() {
       
       const payload = {
         ...formValues,
-        dob: formValues.dob ? formValues.dob.format('YYYY-MM-DD') : null,
+        dob: formValues.dob && typeof formValues.dob.format === 'function' ? formValues.dob.format('YYYY-MM-DD') : (formValues.dob || null),
         avatarUrl: sidebarInfo.avatarUrl || null,
       };
 

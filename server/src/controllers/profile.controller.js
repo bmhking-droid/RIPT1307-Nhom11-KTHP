@@ -48,10 +48,25 @@ class ProfileController {
         profileData.avatarUrl = avatarUrl;
       }
 
+      // Loại bỏ các trường undefined để tránh lỗi ghi đè dữ liệu
+      Object.keys(profileData).forEach(key => {
+        if (profileData[key] === undefined) {
+          delete profileData[key];
+        }
+      });
+
+      // Tìm email của user làm fallback tên nếu chưa có
+      let fallbackName = "Thí sinh";
+      const user = await User.findByPk(userId);
+      if (user && user.email) {
+        fallbackName = user.email.split('@')[0];
+      }
+
       const [profile, created] = await Profile.findOrCreate({
         where: { userId },
         defaults: {
           userId,
+          fullName: fullName || fallbackName,
           ...profileData
         }
       });
