@@ -6,12 +6,12 @@ export async function uploadDocument(
 ) {
   const formData = new FormData();
 
-  formData.append('file', file);
-
   formData.append(
     'documentType',
     documentType,
   );
+
+  formData.append('file', file);
 
   return request.post(
     '/upload/document',

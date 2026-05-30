@@ -19,8 +19,8 @@ export default function DocumentsStep() {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('documentType', documentType);
+      formData.append('file', file);
 
       const res = await uploadCandidateFile(formData);
 

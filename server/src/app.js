@@ -30,7 +30,22 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Đảm bảo các thư mục uploads tồn tại vật lý từ trước khi express.static được khởi tạo
+const fs = require("fs");
+const uploadsDir = path.join(__dirname, "../uploads");
+const subFolders = ["avatar", "khac", "cccd", "hoc-ba", "uu-tien", "anh-3x4", "diem-thi"];
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+subFolders.forEach(folder => {
+  const subDirPath = path.join(uploadsDir, folder);
+  if (!fs.existsSync(subDirPath)) {
+    fs.mkdirSync(subDirPath, { recursive: true });
+  }
+});
+
+app.use("/uploads", express.static(uploadsDir));
 
 app.get("/", (req, res) => {
   res.json({ message: "Online Admission API is running" });

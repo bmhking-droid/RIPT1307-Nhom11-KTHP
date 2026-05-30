@@ -4,28 +4,52 @@ const path = require("path");
 
 class MailService {
   /**
-   * Khởi tạo động và gửi email qua SMTP
+   * Khởi tạo động và gửi email qua Google HTTP API Gateway hoặc SMTP
    */
   async sendMail(to, subject, html) {
-    // Load động cấu hình để luôn đồng bộ các biến môi trường mới nhất từ Render/dotenv
+    // 1. ƯU TIÊN TUYỆT ĐỐI GỬI QUA GOOGLE APPS SCRIPT HTTP API GATEWAY (Vượt qua 100% rào cản chặn SMTP của Render)
+    if (process.env.EMAIL_API_URL) {
+      try {
+        console.log(`🌐 [HTTP EMAIL GATEWAY] Đang gửi email thật qua HTTPS tới: ${to}...`);
+        
+        // Sử dụng fetch tích hợp sẵn của NodeJS 18+ để gọi Web API qua cổng 443
+        const response = await fetch(process.env.EMAIL_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ to, subject, html }),
+        });
+
+        const result = await response.json();
+        if (result && result.success) {
+          console.log(`📧 [HTTP EMAIL SUCCESS] Email thật đã được gửi thành công đến: ${to} (thông qua Google Gateway)`);
+          this.saveEmailToLog(to, subject, html); // Lưu bản sao cục bộ để hiển thị trong Sandbox
+          return;
+        } else {
+          throw new Error(result.error || "Google API Gateway từ chối yêu cầu.");
+        }
+      } catch (httpError) {
+        console.error("💥 [HTTP EMAIL ERROR] Gửi qua Google API Gateway thất bại:", httpError.message);
+        console.log("🔄 Đang tự động chuyển sang chế độ gửi dự phòng bằng SMTP truyền thống...");
+      }
+    }
+
+    // 2. CHẾ ĐỘ DỰ PHÒNG: SMTP TRUYỀN THỐNG (Hoạt động tốt khi test ở local)
     const mailConfig = require("../configs/mail");
     const isSmtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASSWORD;
 
     if (!isSmtpConfigured) {
-      console.warn("⚠️ [SMTP WARNING] Chưa cấu hình SMTP_USER hoặc SMTP_PASSWORD trên Render Environment. Email sẽ được lưu tạm cục bộ.");
+      console.warn("⚠️ [SMTP WARNING] Chưa cấu hình SMTP trên Render Environment. Email được lưu cục bộ.");
       this.saveEmailToLog(to, subject, html);
       return;
     }
 
     try {
-      console.log(`🔌 [SMTP CONNECTING] Đang khởi tạo kết nối SMTP gửi đến: ${to}...`);
+      console.log(`🔌 [SMTP CONNECTING] Đang gửi qua SMTP dự phòng tới: ${to}...`);
       const transporter = nodemailer.createTransport(mailConfig.smtp);
 
-      // Thẩm định kết nối và thông tin xác thực SMTP trước khi gửi
       await transporter.verify();
-      console.log("🔌 [SMTP CONNECTED] Xác thực tài khoản SMTP thành công!");
-
-      // Tiến hành gửi email
       await transporter.sendMail({
         from: mailConfig.defaults.from,
         to,
@@ -33,16 +57,17 @@ class MailService {
         html,
       });
 
-      console.log(`📧 [SMTP SUCCESS] Email đã được gửi thành công đến địa chỉ: ${to}`);
+      console.log(`📧 [SMTP SUCCESS] Email đã gửi thành công qua SMTP tới: ${to}`);
+      this.saveEmailToLog(to, subject, html);
     } catch (error) {
       console.error("💥 [SMTP ERROR] Gửi email thất bại qua SMTP:", error.message);
-      console.log("🔄 [SMTP FALLBACK] Đang chuyển hướng lưu bản xem trước email xuống thư mục logs/emails cục bộ...");
+      console.log("🔄 [SMTP FALLBACK] Lưu bản xem trước email xuống thư mục logs/emails cục bộ...");
       this.saveEmailToLog(to, subject, html);
     }
   }
 
   /**
-   * Lưu email cục bộ làm bản xem trước nếu không có SMTP hoặc gửi lỗi
+   * Lưu email cục bộ làm bản xem trước cho Sandbox
    */
   saveEmailToLog(to, subject, html) {
     try {
@@ -65,7 +90,6 @@ class MailService {
 ${html}`;
 
       fs.writeFileSync(filePath, fileContent, "utf8");
-      console.log(`📂 [BẢN XEM TRƯỚC EMAIL] Đã lưu thành công tại: server/logs/emails/${fileName}`);
     } catch (err) {
       console.error("💥 [LOG WRITE ERROR] Không thể ghi file log email:", err.message);
     }

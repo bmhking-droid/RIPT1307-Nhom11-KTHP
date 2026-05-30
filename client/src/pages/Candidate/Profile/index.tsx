@@ -181,8 +181,8 @@ export default function CandidateProfile() {
     try {
       setAvatarLoading(true);
       const formData = new FormData();
-      formData.append('file', file);
       formData.append('documentType', 'AVATAR');
+      formData.append('file', file);
       
       const uploadRes: any = await request.post('/upload/document', formData, {
         headers: {
