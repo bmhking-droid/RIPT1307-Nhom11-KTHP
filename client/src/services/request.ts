@@ -3,7 +3,7 @@ import { message } from 'antd';
 
 const request = axios.create({
   baseURL: process.env.UMI_APP_API_URL || 'http://localhost:5000/api',
-  timeout: 10000,
+  timeout: 60000,
   withCredentials: true,
 });
 

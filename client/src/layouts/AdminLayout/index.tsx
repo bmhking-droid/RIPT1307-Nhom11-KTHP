@@ -14,7 +14,6 @@ import {
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import styles from './index.less';
 import AppLogo from '@/components/AppLogo';
-import EmailSandbox from '@/components/EmailSandbox';
 
 const { Header, Sider, Content } = Layout;
 
@@ -193,7 +192,6 @@ export default function AdminLayout() {
           <Outlet />
         </Content>
       </Layout>
-      <EmailSandbox />
     </Layout>
   );
 }

@@ -37,10 +37,11 @@ class UploadController {
         return errorResponse(res, "Không có file được upload", 400);
       }
 
-      // 1. Đường dẫn lưu cục bộ (dùng dự phòng hoặc chạy local offline)
+      // 1. Đường dẫn lưu cục bộ mặc định ban đầu
       const relativePath = req.file.path
         .replace(/\\/g, "/")
         .split("/uploads/")[1];
+      const folderName = relativePath.split("/")[0]; // e.g. "cccd", "hoc-ba", "avatar"
       let fileUrl = `/uploads/${relativePath}`;
 
       // 2. Tự động tải lên đám mây lưu trữ vĩnh viễn Catbox.moe qua HTTPS để vượt qua ổ cứng tạm thời của Render
@@ -54,7 +55,7 @@ class UploadController {
           { reqtype: "fileupload" },
           {
             name: "fileToUpload",
-            filename: req.file.originalname,
+            filename: req.file.filename || req.file.originalname, // Sử dụng tên file an toàn đã qua Multer để tránh lỗi mã hóa ký tự đặc biệt
             mimetype: req.file.mimetype,
             buffer: fileBuffer
           }
@@ -72,16 +73,28 @@ class UploadController {
         if (response.ok) {
           const catboxUrl = (await response.text()).trim();
           if (catboxUrl && catboxUrl.startsWith("http")) {
-            fileUrl = catboxUrl;
-            console.log(`✅ [CATBOX SUCCESS] Đã lưu trữ đám mây vĩnh viễn thành công tại: ${fileUrl}`);
+            console.log(`✅ [CATBOX SUCCESS] Đã tải lên thành công: ${catboxUrl}`);
+            
+            // Trích xuất tên file duy nhất từ Catbox (ví dụ: "0qimb4.png")
+            const catboxFilename = catboxUrl.split("/").pop();
+            
+            // Đường dẫn lưu mới cục bộ khớp với Catbox ID
+            const newLocalPath = path.join(path.dirname(req.file.path), catboxFilename);
+            
+            // Đổi tên file cục bộ trên đĩa để đồng bộ hoàn toàn
+            fs.renameSync(req.file.path, newLocalPath);
+            
+            // Gán lại fileUrl thành dạng đường dẫn tương đối đi qua Proxy bảo mật của backend
+            fileUrl = `/uploads/${folderName}/${catboxFilename}`;
+            console.log(`🔄 [SYNC SUCCESS] Đã đổi tên file cục bộ thành: ${catboxFilename}. URL lưu database: ${fileUrl}`);
           } else {
-            console.warn(`⚠️ [CATBOX WARNING] Catbox trả về phản hồi không hợp lệ: "${catboxUrl}"`);
+            console.warn(`⚠️ [CATBOX WARNING] Phản hồi Catbox không hợp lệ: "${catboxUrl}"`);
           }
         } else {
           console.warn(`⚠️ [CATBOX FAILED] HTTP status: ${response.status} khi tải lên Catbox`);
         }
       } catch (catboxErr) {
-        console.error("💥 [CATBOX ERROR] Không thể tải lên Catbox, chuyển sang dùng lưu trữ cục bộ:", catboxErr.message);
+        console.error("💥 [CATBOX ERROR] Không thể tải lên Catbox, dùng lưu trữ cục bộ dự phòng:", catboxErr.message);
       }
 
       const fileData = {

@@ -225,11 +225,35 @@ export default function CreateApplication() {
     setCurrent((prev) => prev - 1);
   };
 
-  // Hàm lấy fileUrl từ nhiều cấu trúc khác nhau
-  const extractFileUrl = (fileList: any[]) => {
-    if (!fileList || !fileList[0]) return '';
-    const file = fileList[0];
-    return file.response?.fileUrl || file.response?.data?.fileUrl || file.url || '';
+  // Hàm lấy fileUrl từ nhiều cấu trúc khác nhau cực kỳ mạnh mẽ
+  const extractFileUrl = (fileList: any) => {
+    if (!fileList) return '';
+    
+    // Nếu fileList là mảng
+    if (Array.isArray(fileList) && fileList.length > 0) {
+      const file = fileList[0];
+      const url = file.response?.fileUrl || 
+                  file.response?.data?.fileUrl || 
+                  file.response?.url || 
+                  file.response?.data?.url || 
+                  file.url || 
+                  (typeof file.response === 'string' ? file.response : '');
+      return url;
+    }
+    
+    // Nếu fileList là đối tượng file đơn lẻ
+    if (typeof fileList === 'object') {
+      const file = fileList;
+      const url = file.response?.fileUrl || 
+                  file.response?.data?.fileUrl || 
+                  file.response?.url || 
+                  file.response?.data?.url || 
+                  file.url || 
+                  (typeof file.response === 'string' ? file.response : '');
+      return url;
+    }
+    
+    return '';
   };
 
   const handleSubmitForm = async () => {

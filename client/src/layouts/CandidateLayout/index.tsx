@@ -9,7 +9,6 @@ import {
 import { Avatar, Button, Menu } from 'antd';
 import { Outlet, history, useLocation } from 'umi';
 import AppLogo from '@/components/AppLogo';
-import EmailSandbox from '@/components/EmailSandbox';
 import styles from './index.less';
 
 export default function CandidateLayout() {
@@ -128,7 +127,6 @@ export default function CandidateLayout() {
           <Outlet />
         </main>
       </section>
-      <EmailSandbox />
     </div>
   );
 }
