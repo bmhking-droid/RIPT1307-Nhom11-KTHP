@@ -43,12 +43,34 @@ exports.findAll = async (filters = {}) => {
 
   if (filters.keyword) {
     const keyword = String(filters.keyword).trim();
+    
+    // Find matching users first to avoid Sequelize's pagination subquery bug
+    // (Unknown column 'User.email' in 'where clause')
+    const matchedUsers = await User.findAll({
+      attributes: ["id"],
+      include: [{
+        model: Profile,
+        as: "profile",
+        attributes: []
+      }],
+      where: {
+        [Op.or]: [
+          { email: { [Op.like]: `%${keyword}%` } },
+          { "$profile.fullName$": { [Op.like]: `%${keyword}%` } },
+          { "$profile.cccd$": { [Op.like]: `%${keyword}%` } }
+        ]
+      }
+    });
+
+    const userIds = matchedUsers.map(u => u.id);
+
     where[Op.or] = [
-      { id: { [Op.like]: `%${keyword}%` } },
-      { "$User.email$": { [Op.like]: `%${keyword}%` } },
-      { "$User.profile.fullName$": { [Op.like]: `%${keyword}%` } },
-      { "$User.profile.cccd$": { [Op.like]: `%${keyword}%` } }
+      { id: { [Op.like]: `%${keyword}%` } }
     ];
+
+    if (userIds.length > 0) {
+      where[Op.or].push({ userId: { [Op.in]: userIds } });
+    }
   }
 
   const page = Number(filters.page) || 1;
