@@ -1,4 +1,5 @@
-const { Application, University, Major, Profile, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory, User } = require("../models");
+const { sequelize, Application, University, Major, Profile, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory, User } = require("../models");
+const { Op } = sequelize.Sequelize;
 
 exports.create = async (payload, transaction) => {
   return await Application.create(payload, { transaction });
@@ -39,6 +40,16 @@ exports.findAll = async (filters = {}) => {
   if (filters.universityId) where.universityId = filters.universityId;
   if (filters.majorId) where.majorId = filters.majorId;
   if (filters.roundId) where.roundId = filters.roundId;
+
+  if (filters.keyword) {
+    const keyword = String(filters.keyword).trim();
+    where[Op.or] = [
+      { id: { [Op.like]: `%${keyword}%` } },
+      { "$User.email$": { [Op.like]: `%${keyword}%` } },
+      { "$User.profile.fullName$": { [Op.like]: `%${keyword}%` } },
+      { "$User.profile.cccd$": { [Op.like]: `%${keyword}%` } }
+    ];
+  }
 
   const page = Number(filters.page) || 1;
   const limit = Number(filters.limit) || 20;
