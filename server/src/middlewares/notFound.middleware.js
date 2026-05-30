@@ -7,7 +7,7 @@ const notFound = async (req, res, next) => {
   if (url.startsWith("/uploads/")) {
     try {
       const parts = url.split("/");
-      const filename = parts[parts.length - 1]; // e.g. "0qimb4.png"
+      const filename = parts[parts.length - 1].split("?")[0]; // e.g. "0qimb4.png"
       
       let fallbackUrl = "https://placehold.co/600x800/e2e8f0/475569?text=Minh+Chung+Mau";
       let contentType = url.endsWith(".pdf") ? "application/pdf" : "image/png";
