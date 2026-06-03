@@ -10,7 +10,13 @@ const notFound = async (req, res, next) => {
       const filename = parts[parts.length - 1].split("?")[0]; // e.g. "0qimb4.png"
       
       let fallbackUrl = "https://placehold.co/600x800.png/e2e8f0/475569?text=Minh+Chung+Mau";
-      let contentType = url.endsWith(".pdf") ? "application/pdf" : "image/png";
+      let contentType = "image/png";
+      const lowercaseUrl = url.toLowerCase();
+      if (lowercaseUrl.endsWith(".pdf")) {
+        contentType = "application/pdf";
+      } else if (lowercaseUrl.endsWith(".jpg") || lowercaseUrl.endsWith(".jpeg")) {
+        contentType = "image/jpeg";
+      }
 
       // Kiểm tra xem có phải tên file dạng timestamp (local/mock) hay không
       const isLocalFormat = filename.includes("-") && /\d{10,}/.test(filename);

@@ -31,7 +31,6 @@ const fileFilter = (req, file, cb) => {
   const ext = path.extname(originalName).toLowerCase();
   const basename = path.basename(originalName, ext);
 
-  if (basename.includes(".")) return cb(new Error("Tên file không hợp lệ"), false);
   if (!uploadConfig.allowedMimeTypes.includes(file.mimetype)) return cb(new Error("Chỉ hỗ trợ file JPG, PNG, PDF"), false);
   if (![".jpg", ".jpeg", ".png", ".pdf"].includes(ext)) return cb(new Error("Định dạng file không được hỗ trợ"), false);
 

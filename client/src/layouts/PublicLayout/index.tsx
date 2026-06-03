@@ -32,7 +32,9 @@ export default function PublicLayout() {
         </div>
       </header>
 
-      <Outlet />
+      <div className={styles.content}>
+        <Outlet />
+      </div>
     </div>
   );
 }
