@@ -2,54 +2,20 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "User",
     {
-      id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-          isEmail: true,
-        },
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      role: {
-        type: DataTypes.ENUM("student", "admin", "super_admin"),
-        defaultValue: "student",
-      },
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
-      },
-      emailVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
+      id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+      email: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { isEmail: true } },
+      password: { type: DataTypes.STRING, allowNull: false },
+      role: { type: DataTypes.ENUM("CANDIDATE", "ADMIN"), defaultValue: "CANDIDATE" },
+      isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+      emailVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
-    {
-      tableName: "users",
-      timestamps: true,
-      paranoid: false,
-    },
+    { tableName: "users", timestamps: true },
   );
 
   User.associate = (models) => {
     User.hasOne(models.Profile, { foreignKey: "userId", as: "profile" });
-    User.hasMany(models.Application, {
-      foreignKey: "userId",
-      as: "applications",
-    });
-    User.hasMany(models.ApplicationStatusHistory, {
-      foreignKey: "changedBy",
-      as: "changedHistories",
-    });
+    User.hasMany(models.Application, { foreignKey: "userId", as: "applications" });
+    User.hasMany(models.AuthOtp, { foreignKey: "userId", as: "authOtps" });
   };
-
   return User;
 };
