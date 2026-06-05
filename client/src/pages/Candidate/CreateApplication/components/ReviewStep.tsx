@@ -1,5 +1,6 @@
+import React from 'react';
 import { SendOutlined, CheckCircleFilled } from '@ant-design/icons';
-import { Divider, Tag } from 'antd';
+import { Row, Col, Card, Tag, Alert } from 'antd';
 import styles from '../index.less';
 
 type Props = {
@@ -18,8 +19,10 @@ export default function ReviewStep({
   getCombinationName,
 }: Props) {
   const renderValue = (val: any) => {
-    if (val === undefined || val === null || val === '') return <span style={{ color: '#999' }}>Chưa điền</span>;
-    return <strong>{val}</strong>;
+    if (val === undefined || val === null || val === '') {
+      return <span style={{ color: '#9ca3af', fontStyle: 'italic', fontSize: '15px' }}>Chưa điền</span>;
+    }
+    return <strong style={{ color: '#111827', fontWeight: 700, fontSize: '16px' }}>{val}</strong>;
   };
 
   // Đếm file minh chứng đã upload
@@ -30,125 +33,190 @@ export default function ReviewStep({
     values?.priorityFile,
   ].filter((f) => f && f.length > 0).length;
 
+  const infoItemStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '14px 0',
+    borderBottom: '1px solid #f3f4f6',
+    gap: '16px',
+  };
+
+  const labelStyle = {
+    color: '#4b5563',
+    fontWeight: 600,
+    fontSize: '15px',
+  };
+
   return (
     <div className={styles.stepContent}>
-      <div className={styles.blockTitle}>
-        <SendOutlined />
+      <div className={styles.blockTitle} style={{ marginBottom: '24px' }}>
+        <span><SendOutlined /></span>
         <div>
-          <h3>Xác nhận thông tin hồ sơ</h3>
-          <p>Kiểm tra lại toàn bộ thông tin trước khi gửi xét tuyển.</p>
+          <h3 style={{ fontSize: '24px', fontWeight: 800 }}>Xác nhận thông tin hồ sơ</h3>
+          <p style={{ fontSize: '15px' }}>Kiểm tra lại toàn bộ thông tin trước khi gửi xét tuyển.</p>
         </div>
       </div>
 
-      <div className={styles.reviewBox}>
-        {/* KHỐI 1: NGUYỆN VỌNG */}
-        <h4 style={{ color: '#1677ff', marginBottom: 12 }}>📋 Thông tin nguyện vọng</h4>
-        
-        <div className={styles.reviewItem}>
-          <span>Trường đại học</span>
-          {renderValue(getUniversityName())}
-        </div>
+      <Row gutter={[24, 24]}>
+        {/* CỘT TRÁI: THÔNG TIN CÁ NHÂN */}
+        <Col xs={24} md={13}>
+          <Card
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 800, color: '#4f46e5' }}>
+                <span>👤</span> Thông tin cá nhân thí sinh
+              </div>
+            }
+            style={{
+              borderRadius: '20px',
+              border: '1px solid #e0e7ff',
+              boxShadow: '0 8px 30px rgba(79, 70, 229, 0.04)',
+              height: '100%',
+            }}
+          >
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Họ tên</span>
+              {renderValue(values?.fullName)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Ngày sinh</span>
+              {renderValue(values?.dob)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Giới tính</span>
+              {renderValue(values?.gender)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Email</span>
+              {renderValue(values?.email)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Số điện thoại</span>
+              {renderValue(values?.phone)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>CCCD</span>
+              {renderValue(values?.citizenId)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Tỉnh / Thành phố</span>
+              {renderValue(values?.province)}
+            </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Địa chỉ chi tiết</span>
+              {renderValue(values?.address)}
+            </div>
+            <div style={{ ...infoItemStyle, borderBottom: 'none' }}>
+              <span style={labelStyle}>Điểm xét tuyển</span>
+              <span style={{ color: '#4f46e5', fontWeight: 800, fontSize: '20px' }}>
+                {values?.score || 'Chưa nhập'}
+              </span>
+            </div>
+          </Card>
+        </Col>
 
-        <div className={styles.reviewItem}>
-          <span>Ngành xét tuyển</span>
-          {renderValue(getMajorName())}
-        </div>
+        {/* CỘT PHẢI: NGUYỆN VỌNG & MINH CHỨNG */}
+        <Col xs={24} md={11} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* KHỐI 1: NGUYỆN VỌNG */}
+          <Card
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 800, color: '#1677ff' }}>
+                <span>📋</span> Thông tin nguyện vọng
+              </div>
+            }
+            style={{
+              borderRadius: '20px',
+              border: '1px solid #dbeafe',
+              boxShadow: '0 8px 30px rgba(22, 119, 255, 0.04)',
+            }}
+          >
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Trường đại học</span>
+              {renderValue(getUniversityName())}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Đợt tuyển sinh</span>
-          {renderValue(getAdmissionRoundName())}
-        </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Ngành xét tuyển</span>
+              {renderValue(getMajorName())}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Tổ hợp xét tuyển</span>
-          {renderValue(getCombinationName())}
-        </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Đợt tuyển sinh</span>
+              {renderValue(getAdmissionRoundName())}
+            </div>
 
-        <Divider />
+            <div style={{ ...infoItemStyle, borderBottom: 'none' }}>
+              <span style={labelStyle}>Tổ hợp xét tuyển</span>
+              <span style={{ background: '#e6f4ff', color: '#0958d9', padding: '4px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '15px' }}>
+                {getCombinationName() || 'Chưa chọn'}
+              </span>
+            </div>
+          </Card>
 
-        {/* KHỐI 2: THÔNG TIN CÁ NHÂN */}
-        <h4 style={{ color: '#1677ff', marginBottom: 12 }}>👤 Thông tin thí sinh</h4>
+          {/* KHỐI 2: MINH CHỨNG */}
+          <Card
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 800, color: '#52c41a' }}>
+                <span>📎</span> Minh chứng đã tải lên
+              </div>
+            }
+            style={{
+              borderRadius: '20px',
+              border: '1px solid #d9f7be',
+              boxShadow: '0 8px 30px rgba(82, 196, 26, 0.04)',
+              flexGrow: 1,
+            }}
+          >
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Học bạ THPT</span>
+              {values?.transcriptFile && values.transcriptFile.length > 0 
+                ? <Tag color="success" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }} icon={<CheckCircleFilled />}>{values.transcriptFile[0]?.name || 'Đã upload'}</Tag> 
+                : <Tag color="error" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }}>Chưa upload</Tag>}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Họ tên</span>
-          {renderValue(values?.fullName)}
-        </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>CCCD/CMND</span>
+              {values?.citizenIdFile && values.citizenIdFile.length > 0 
+                ? <Tag color="success" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }} icon={<CheckCircleFilled />}>{values.citizenIdFile[0]?.name || 'Đã upload'}</Tag>
+                : <Tag color="error" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }}>Chưa upload</Tag>}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Ngày sinh</span>
-          {renderValue(values?.dob)}
-        </div>
+            <div style={infoItemStyle}>
+              <span style={labelStyle}>Chứng chỉ tiếng Anh</span>
+              {values?.englishCertFile && values.englishCertFile.length > 0 
+                ? <Tag color="success" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }} icon={<CheckCircleFilled />}>{values.englishCertFile[0]?.name || 'Đã upload'}</Tag>
+                : <Tag color="default" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }}>Không bắt buộc</Tag>}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Giới tính</span>
-          {renderValue(values?.gender)}
-        </div>
+            <div style={{ ...infoItemStyle, borderBottom: 'none' }}>
+              <span style={labelStyle}>Giấy ưu tiên</span>
+              {values?.priorityFile && values.priorityFile.length > 0 
+                ? <Tag color="success" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }} icon={<CheckCircleFilled />}>{values.priorityFile[0]?.name || 'Đã upload'}</Tag>
+                : <Tag color="default" style={{ fontSize: '14px', padding: '4px 10px', borderRadius: '6px' }}>Không bắt buộc</Tag>}
+            </div>
 
-        <div className={styles.reviewItem}>
-          <span>Email</span>
-          {renderValue(values?.email)}
-        </div>
+            <div style={{ marginTop: '20px', padding: '14px', background: '#f6ffed', borderRadius: '12px', border: '1px dashed #b7eb8f', textAlign: 'center' }}>
+              <strong style={{ color: '#389e0d', fontSize: '16px' }}>
+                Tổng cộng {fileCount} file minh chứng đã sẵn sàng
+              </strong>
+            </div>
+          </Card>
+        </Col>
+      </Row>
 
-        <div className={styles.reviewItem}>
-          <span>Số điện thoại</span>
-          {renderValue(values?.phone)}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>CCCD</span>
-          {renderValue(values?.citizenId)}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>Địa chỉ</span>
-          {renderValue(values?.address)}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>Điểm xét tuyển</span>
-          {renderValue(values?.score)}
-        </div>
-
-        <Divider />
-
-        {/* KHỐI 3: MINH CHỨNG */}
-        <h4 style={{ color: '#1677ff', marginBottom: 12 }}>📎 Minh chứng đã tải lên</h4>
-
-        <div className={styles.reviewItem}>
-          <span>Học bạ THPT</span>
-          {values?.transcriptFile && values.transcriptFile.length > 0 
-            ? <Tag color="success" icon={<CheckCircleFilled />}>{values.transcriptFile[0]?.name || 'Đã upload'}</Tag> 
-            : <Tag color="error">Chưa upload</Tag>}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>CCCD/CMND</span>
-          {values?.citizenIdFile && values.citizenIdFile.length > 0 
-            ? <Tag color="success" icon={<CheckCircleFilled />}>{values.citizenIdFile[0]?.name || 'Đã upload'}</Tag>
-            : <Tag color="error">Chưa upload</Tag>}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>Chứng chỉ tiếng Anh</span>
-          {values?.englishCertFile && values.englishCertFile.length > 0 
-            ? <Tag color="success" icon={<CheckCircleFilled />}>{values.englishCertFile[0]?.name || 'Đã upload'}</Tag>
-            : <Tag color="default">Không bắt buộc</Tag>}
-        </div>
-
-        <div className={styles.reviewItem}>
-          <span>Giấy ưu tiên</span>
-          {values?.priorityFile && values.priorityFile.length > 0 
-            ? <Tag color="success" icon={<CheckCircleFilled />}>{values.priorityFile[0]?.name || 'Đã upload'}</Tag>
-            : <Tag color="default">Không bắt buộc</Tag>}
-        </div>
-
-        <Divider />
-
-        <div style={{ textAlign: 'center', padding: '12px 0', background: '#f6ffed', borderRadius: 8 }}>
-          <strong style={{ color: '#52c41a', fontSize: 16 }}>
-            Tổng cộng {fileCount} file minh chứng đã sẵn sàng
-          </strong>
-        </div>
+      <div style={{ marginTop: '24px' }}>
+        <Alert
+          message={<span style={{ fontWeight: 750, fontSize: '15px' }}>Lưu ý trước khi nộp hồ sơ</span>}
+          description={
+            <span style={{ fontSize: '14px', lineHeight: '1.6', color: '#666' }}>
+              Vui lòng rà soát lại thật kỹ các thông tin cá nhân, điểm xét tuyển và các tệp minh chứng đã upload ở trên. 
+              Sau khi bấm <strong>"Gửi hồ sơ xét tuyển"</strong>, hệ thống sẽ tiếp nhận đơn xét tuyển của bạn và bạn sẽ không thể tự chỉnh sửa cho đến khi được duyệt.
+            </span>
+          }
+          type="warning"
+          showIcon
+          style={{ borderRadius: '12px' }}
+        />
       </div>
     </div>
   );
