@@ -225,32 +225,40 @@ export default function CreateApplication() {
     setCurrent((prev) => prev - 1);
   };
 
-  // Hàm lấy fileUrl từ nhiều cấu trúc khác nhau cực kỳ mạnh mẽ
+  // Hàm lấy fileUrl từ nhiều cấu trúc khác nhau và lọc sạch blob/data URLs
   const extractFileUrl = (fileList: any) => {
     if (!fileList) return '';
     
-    // Nếu fileList là mảng
-    if (Array.isArray(fileList) && fileList.length > 0) {
-      const file = fileList[0];
+    const getValidUrl = (file: any) => {
+      // Ưu tiên phản hồi chính thức từ backend
       const url = file.response?.fileUrl || 
                   file.response?.data?.fileUrl || 
                   file.response?.url || 
                   file.response?.data?.url || 
-                  file.url || 
                   (typeof file.response === 'string' ? file.response : '');
-      return url;
+                  
+      if (url && typeof url === 'string') {
+        if (url.startsWith('/uploads/') || url.startsWith('http://') || url.startsWith('https://')) {
+          return url;
+        }
+      }
+      
+      // Nếu không có response, kiểm tra file.url (chỉ chấp nhận nếu không phải là blob: hoặc data:)
+      if (file.url && typeof file.url === 'string') {
+        if (file.url.startsWith('/uploads/') || (file.url.startsWith('http') && !file.url.startsWith('blob:'))) {
+          return file.url;
+        }
+      }
+      
+      return '';
+    };
+
+    if (Array.isArray(fileList) && fileList.length > 0) {
+      return getValidUrl(fileList[0]);
     }
     
-    // Nếu fileList là đối tượng file đơn lẻ
     if (typeof fileList === 'object') {
-      const file = fileList;
-      const url = file.response?.fileUrl || 
-                  file.response?.data?.fileUrl || 
-                  file.response?.url || 
-                  file.response?.data?.url || 
-                  file.url || 
-                  (typeof file.response === 'string' ? file.response : '');
-      return url;
+      return getValidUrl(fileList);
     }
     
     return '';

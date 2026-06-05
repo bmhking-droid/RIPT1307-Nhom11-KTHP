@@ -10,9 +10,11 @@ import {
   Timeline,
   Empty,
   message,
+  Image,
 } from 'antd';
 import { getCandidateApplicationDetail } from '@/services/candidate';
 import { getFileUrl } from '@/services/request';
+import { FilePdfOutlined, PictureOutlined } from '@ant-design/icons';
 
 const statusMap: any = {
   pending: {
@@ -139,25 +141,55 @@ export default function CandidateApplicationDetail() {
         <Card size="small" title="File minh chứng đã nộp">
           <List
             dataSource={data.documents || []}
-            renderItem={(file: any) => (
-              <List.Item
-                actions={[
-                  <a
-                    key="view"
-                    href={getFileUrl(file.fileUrl)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Xem file trực tuyến
-                  </a>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={file.originalName || 'Tài liệu chưa đặt tên'}
-                  description={`Loại tài liệu: ${file.documentType || 'N/A'}`}
-                />
-              </List.Item>
-            )}
+            renderItem={(file: any) => {
+              const isPdf = file.fileUrl?.toLowerCase().endsWith('.pdf');
+              const fileUrl = getFileUrl(file.fileUrl);
+
+              return (
+                <List.Item
+                  actions={[
+                    <a
+                      key="view"
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ fontWeight: 600, color: '#4f46e5' }}
+                    >
+                      Xem file gốc (Tab mới)
+                    </a>,
+                  ]}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, width: '100%' }}>
+                    <div style={{ width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', borderRadius: 8, overflow: 'hidden', border: '1px solid #e5e7eb', flexShrink: 0 }}>
+                      {isPdf ? (
+                        <a href={fileUrl} target="_blank" rel="noreferrer" title="Click để xem PDF">
+                          <FilePdfOutlined style={{ fontSize: 32, color: '#ef4444' }} />
+                        </a>
+                      ) : (
+                        <Image
+                          src={fileUrl}
+                          alt={file.originalName}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          fallback="https://placehold.co/600x800.png/e2e8f0/475569?text=LOI+ANH"
+                        />
+                      )}
+                    </div>
+                    <List.Item.Meta
+                      title={
+                        <div style={{ fontWeight: 600 }}>
+                          {file.originalName || 'Tài liệu chưa đặt tên'}
+                        </div>
+                      }
+                      description={
+                        <div style={{ fontSize: 13, color: '#6b7280' }}>
+                          Loại tài liệu: <Tag color="blue" style={{ borderRadius: 6, fontWeight: 500 }}>{file.documentType || 'N/A'}</Tag>
+                        </div>
+                      }
+                    />
+                  </div>
+                </List.Item>
+              );
+            }}
           />
         </Card>
 
