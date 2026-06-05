@@ -40,4 +40,15 @@ export default [
       },
     ],
   },
+
+  {
+    path: '/admin',
+    component: '@/layouts/AdminLayout',
+    routes: [
+      {
+        path: '/admin/export-report',
+        component: '@/pages/Admin/ExportReport',
+      },
+    ],
+  },
 ];

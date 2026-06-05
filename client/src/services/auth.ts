@@ -1,4 +1,4 @@
-import request from './request';
+import request from '@/service/request';
 
 // Đăng ký tài khoản mới
 export async function register(data: any) {

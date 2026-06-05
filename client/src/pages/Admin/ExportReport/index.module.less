@@ -1,0 +1,101 @@
+.exportReport {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+
+  :global(.ant-card-body) {
+    padding: 40px;
+  }
+}
+
+.headerContent {
+  color: white;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    margin-bottom: 8px;
+
+    :global(.anticon) {
+      margin-right: 12px;
+    }
+  }
+
+  p {
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.9;
+  }
+}
+
+.tabsCard {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+
+  :global(.ant-card-body) {
+    padding: 0;
+  }
+
+  :global(.ant-tabs) {
+    margin: 0;
+  }
+
+  :global(.ant-tabs-tab) {
+    border-bottom: 2px solid #f0f0f0;
+    margin: 0;
+    padding: 16px 24px;
+
+    &:hover {
+      color: #667eea;
+    }
+  }
+
+  :global(.ant-tabs-tab-active) {
+    border-bottom-color: #667eea;
+    color: #667eea;
+  }
+
+  :global(.ant-tabs-content) {
+    padding: 0;
+  }
+}
+
+.exportCard {
+  border: none;
+  box-shadow: none;
+  border-top: 1px solid #f0f0f0;
+
+  :global(.ant-card-body) {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    :global(.ant-card-body) {
+      padding: 24px;
+    }
+  }
+
+  .headerContent {
+    h1 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+
+  .exportCard {
+    :global(.ant-card-body) {
+      padding: 16px;
+    }
+  }
+}

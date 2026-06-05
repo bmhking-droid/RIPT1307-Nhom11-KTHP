@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const apiRoutes = require('./routes');
 
 const app = express();
 
@@ -17,10 +18,6 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use('/api', (req, res) => {
-  res.json({
-    message: 'API ready',
-  });
-});
+app.use('/api', apiRoutes);
 
 module.exports = app;
