@@ -23,14 +23,29 @@ const forgotPasswordSchema = Joi.object({
   email: Joi.string().email().trim().lowercase().required(),
 });
 
+const verifyOtpSchema = Joi.object({
+  email: Joi.string().email().trim().lowercase().required().messages({
+    "string.email": "Email không hợp lệ",
+    "any.required": "Email là bắt buộc",
+  }),
+  otp: Joi.string().length(6).required().messages({
+    "string.length": "Mã OTP phải có độ dài đúng 6 ký tự",
+    "any.required": "Mã OTP là bắt buộc",
+  }),
+});
+
 const resetPasswordSchema = Joi.object({
   token: Joi.string().required(),
-  newPassword: Joi.string().min(6).max(100).required(),
+  newPassword: Joi.string().min(6).max(100).required().messages({
+    "string.min": "Mật khẩu mới phải có ít nhất 6 ký tự",
+    "any.required": "Mật khẩu mới là bắt buộc",
+  }),
 });
 
 module.exports = {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
+  verifyOtpSchema,
   resetPasswordSchema,
 };

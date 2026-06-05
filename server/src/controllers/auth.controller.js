@@ -57,6 +57,34 @@ class AuthController {
       return errorResponse(res, error.message, 401);
     }
   }
+
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return errorResponse(res, "Email là bắt buộc", 400);
+      }
+
+      await authService.forgotPassword(email);
+      return successResponse(res, null, "Mã OTP khôi phục mật khẩu đã được gửi đến email của bạn.");
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      const { email, otpCode, newPassword } = req.body;
+      if (!email || !otpCode || !newPassword) {
+        return errorResponse(res, "Thông tin email, mã OTP và mật khẩu mới là bắt buộc", 400);
+      }
+
+      await authService.resetPassword(email, otpCode, newPassword);
+      return successResponse(res, null, "Đặt lại mật khẩu thành công. Vui lòng sử dụng mật khẩu mới để đăng nhập.");
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
 }
 
 module.exports = new AuthController();

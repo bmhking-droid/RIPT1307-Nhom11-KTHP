@@ -265,6 +265,45 @@ ${html}`;
     `;
     await this.sendMail(email, subject, html);
   }
+
+  /**
+   * Thư gửi mã OTP đặt lại mật khẩu
+   */
+  async sendResetPasswordOtpEmail(email, otpCode) {
+    const subject = "🔑 Mã xác thực OTP khôi phục mật khẩu - UniAdmission";
+    const html = `
+      <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 30px; border: 1px solid #edf2f7; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.02);">
+        <div style="text-align: center; border-bottom: 3px solid #10B981; padding-bottom: 25px; margin-bottom: 25px;">
+          <h2 style="color: #10B981; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">UniAdmission</h2>
+          <p style="color: #4B5563; font-size: 14px; margin: 6px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">Khôi phục mật khẩu</p>
+        </div>
+        <div style="color: #1F2937; line-height: 1.6; font-size: 15px;">
+          <h3 style="color: #111827; margin-top: 0; font-size: 18px; font-weight: 700;">Xin chào thí sinh,</h3>
+          <p>Chúng tôi đã nhận được yêu cầu khôi phục mật khẩu cho tài khoản ứng tuyển của bạn trên hệ thống <strong>UniAdmission</strong>.</p>
+          <p>Vui lòng sử dụng mã xác thực OTP dưới đây để tiến hành thiết lập lại mật khẩu của bạn:</p>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <div style="display: inline-block; background-color: #F0FDF4; border: 2px dashed #10B981; padding: 15px 40px; border-radius: 12px; font-size: 36px; font-weight: 800; color: #10B981; letter-spacing: 8px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.05);">
+              ${otpCode}
+            </div>
+          </div>
+
+          <p style="color: #EF4444; font-weight: 600; font-size: 14px; text-align: center; margin-bottom: 25px;">
+            ⚠️ Lưu ý: Mã OTP này có hiệu lực trong vòng 1 phút và chỉ được sử dụng một lần duy nhất. Không chia sẻ mã này cho bất kỳ ai.
+          </p>
+
+          <p style="margin-top: 25px; color: #4B5563; font-size: 14px; border-left: 3px solid #10B981; padding-left: 12px; font-style: italic;">
+            Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với quản trị viên nếu bạn nghi ngờ có hoạt động truy cập trái phép.
+          </p>
+        </div>
+        <div style="margin-top: 35px; border-top: 1px solid #edf2f7; padding-top: 20px; text-align: center; color: #9CA3AF; font-size: 12px; line-height: 1.5;">
+          <p style="margin: 0 0 5px 0;">Đây là thư điện tử gửi tự động từ hệ thống quản lý tuyển sinh trực tuyến UniAdmission.</p>
+          <p style="margin: 0;">Vui lòng không phản hồi trực tiếp vào địa chỉ email này.</p>
+        </div>
+      </div>
+    `;
+    await this.sendMail(email, subject, html);
+  }
 }
 
 module.exports = new MailService();

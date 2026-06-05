@@ -36,6 +36,25 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("MySQL connected successfully");
+
+    // Auto Schema Fix: Check and add missing OTP columns to users table
+    const queryInterface = sequelize.getQueryInterface();
+    const tableInfo = await queryInterface.describeTable("users");
+    
+    if (!tableInfo.otpCode) {
+      console.log("Adding otpCode column to users table...");
+      await queryInterface.addColumn("users", "otpCode", {
+        type: Sequelize.STRING(50),
+        allowNull: true,
+      });
+    }
+    if (!tableInfo.otpExpiresAt) {
+      console.log("Adding otpExpiresAt column to users table...");
+      await queryInterface.addColumn("users", "otpExpiresAt", {
+        type: Sequelize.DATE,
+        allowNull: true,
+      });
+    }
   } catch (error) {
     console.error("Database connection failed:", error.message);
   }

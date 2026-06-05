@@ -112,6 +112,56 @@ class AuthService {
       throw new Error("Invalid refresh token");
     }
   }
+
+  async forgotPassword(email) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      throw new Error("Email không tồn tại trên hệ thống");
+    }
+
+    // Sinh mã OTP 6 chữ số ngẫu nhiên
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Thời hạn 1 phút (1 * 60 * 1000 ms)
+    const otpExpiresAt = new Date(Date.now() + 1 * 60 * 1000);
+
+    user.otpCode = otpCode;
+    user.otpExpiresAt = otpExpiresAt;
+    await user.save();
+
+    // Gửi email OTP
+    const mailService = require("./mail.service");
+    await mailService.sendResetPasswordOtpEmail(email, otpCode);
+
+    return true;
+  }
+
+  async resetPassword(email, otpCode, newPassword) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      throw new Error("Email không tồn tại trên hệ thống");
+    }
+
+    if (!user.otpCode || user.otpCode !== String(otpCode).trim()) {
+      throw new Error("Mã OTP không chính xác");
+    }
+
+    const now = new Date();
+    if (user.otpExpiresAt && user.otpExpiresAt < now) {
+      throw new Error("Mã OTP đã hết hiệu lực");
+    }
+
+    // Hashing mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.otpCode = null;
+    user.otpExpiresAt = null;
+    await user.save();
+
+    return true;
+  }
 }
 
 module.exports = new AuthService();
