@@ -84,7 +84,7 @@ export default function HomePage() {
                 </div>
 
                 <h1>
-                  Nộp hồ sơ xét tuyển online <span className={styles.highlightText}>nhanh chóng</span> và minh bạch hơn
+                  NỘP HỒ SƠ XÉT TUYỂN ONLINE <span className={styles.highlightText}>NHANH CHÓNG</span> VÀ MINH BẠCH HƠN
                 </h1>
 
                 <p>

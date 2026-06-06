@@ -41,7 +41,6 @@ request.interceptors.response.use(
 export const getFileUrl = (url: string): string => {
   if (!url) return '';
   
-  // Tự động chuyển đổi các liên kết mẫu giả lập sang file thật để Demo hoàn hảo
   if (url.includes('api.admission.edu.vn')) {
     if (url.endsWith('.pdf')) {
       return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
