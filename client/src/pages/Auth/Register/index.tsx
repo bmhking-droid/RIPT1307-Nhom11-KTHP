@@ -9,12 +9,10 @@ export default function RegisterPage() {
     try {
       const { fullName, email, password } = values;
       
-      // Gọi API đăng ký thực tế từ server
       await register({ fullName, email, password });
       
       message.success('Đăng ký tài khoản thành công! Vui lòng đăng nhập.');
       
-      // Chuyển hướng người dùng về trang Đăng nhập chính thức
       history.push('/login');
     } catch (error: any) {
       console.error('Register failed:', error);

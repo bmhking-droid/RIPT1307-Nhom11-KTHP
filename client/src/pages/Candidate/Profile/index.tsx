@@ -90,7 +90,6 @@ export default function CandidateProfile() {
     if (gender === 'Nam') gender = 'male';
     if (gender === 'Nữ') gender = 'female';
 
-    // Ưu tiên dùng trường province lưu riêng, nếu không có mới phân tách từ address
     if (!province && mainAddress) {
       const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
       if (foundProvince) {
@@ -193,7 +192,6 @@ export default function CandidateProfile() {
       if (uploadRes && uploadRes.success && uploadRes.data?.fileUrl) {
         const newAvatarUrl = uploadRes.data.fileUrl;
         
-        // Gọi API cập nhật avatar vào hồ sơ cá nhân
         const formValues = form.getFieldsValue();
         const payload = {
           ...formValues,

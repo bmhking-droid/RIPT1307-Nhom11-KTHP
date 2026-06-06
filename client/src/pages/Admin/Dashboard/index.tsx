@@ -72,7 +72,6 @@ const MajorTrendLineChart = ({ data, dates }: { data: any[], dates: string[] }) 
 
   const byMajor = data || [];
   
-  // Tạo dữ liệu xu hướng thực tế tăng dần kết thúc bằng tổng số lượng thực trong DB
   const trends = byMajor.map((m: any, idx: number) => {
     const total = m.total || 0;
     const val5 = total;
@@ -104,7 +103,6 @@ const MajorTrendLineChart = ({ data, dates }: { data: any[], dates: string[] }) 
   const widthAvailable = svgWidth - 2 * padX;
   const heightAvailable = svgHeight - 2 * padY - 20;
 
-  // Lấy giá trị lớn nhất trong tất cả các mốc lịch sử để làm thang đo Y
   const maxVal = trends.length > 0 
     ? Math.max(...trends.flatMap(t => t.history), 1) 
     : 1;

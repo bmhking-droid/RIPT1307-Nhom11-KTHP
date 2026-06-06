@@ -6,10 +6,9 @@ body,
   font-family: 'Times New Roman', Times, serif !important;
   background: #f5f7fa;
   color: #111827;
-  font-size: 15px !important; // Tăng cỡ chữ lên cho toàn hệ thống
+  font-size: 15px !important; 
 }
 
-// In hoa tất cả tiêu đề h1-h6, tiêu đề card, tiêu đề modal
 h1, h2, h3, h4, h5, h6,
 .ant-card-head-title,
 .ant-modal-title,
@@ -18,7 +17,6 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.5px;
 }
 
-// In hoa sidebar menu items (cho cả Admin và Candidate)
 .ant-menu-item,
 .ant-menu-submenu-title,
 .ant-menu-title-content {
@@ -27,7 +25,6 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 700 !important;
 }
 
-// In hoa logo/brand và header/topbar titles
 [class*="brandTitle"],
 [class*="brandSub"],
 span[style*="UniAdmission"],
@@ -40,7 +37,6 @@ span[style*="Portal"],
   letter-spacing: 0.5px;
 }
 
-// Force font-family for all elements to ensure Times New Roman is applied everywhere
 *, *::before, *::after,
 .ant-btn,
 .ant-input,
@@ -71,11 +67,10 @@ a:hover {
 }
 
 .ant-btn {
-  border-radius: 8px !important; /* Giảm bo góc cho nút nhẹ nhàng hơn */
+  border-radius: 8px !important; 
   font-weight: 600;
 }
 
-// Giảm bớt viền của các nút mặc định (nút thường) để nhìn nhẹ nhàng hơn
 .ant-btn:not(.ant-btn-primary) {
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
@@ -84,7 +79,7 @@ a:hover {
 .ant-btn-primary:not(.ant-btn-background-ghost) {
   border: none !important;
   background: #4f46e5;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1) !important; /* Giảm bóng đổ mờ đậm */
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1) !important; 
 }
 
 .ant-btn-primary:not(.ant-btn-background-ghost):hover {
@@ -94,7 +89,7 @@ a:hover {
 .ant-btn-primary.ant-btn-background-ghost {
   background: rgba(79, 70, 229, 0.04) !important;
   color: #4f46e5 !important;
-  border: 1px solid rgba(79, 70, 229, 0.15) !important; /* Giảm viền nút ghost nhẹ hơn */
+  border: 1px solid rgba(79, 70, 229, 0.15) !important; 
   box-shadow: none;
   transition: all 0.2s ease;
 }

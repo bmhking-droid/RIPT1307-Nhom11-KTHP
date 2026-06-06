@@ -105,7 +105,6 @@ export default function CreateApplication() {
     }
   };
 
-  // LUÔN gọi API Profile để đồng bộ thông tin cá nhân (bất kể có draft hay không)
   const loadProfile = async () => {
     try {
       const res: any = await request.get('/profiles/me');
@@ -116,7 +115,6 @@ export default function CreateApplication() {
 
         let mainAddress = profile.address || '';
         let province: string | undefined = profile.province || undefined;
-        // Bóc tách dự phòng nếu trường province trống (dữ liệu cũ)
         if (!province && mainAddress) {
           const foundProvince = provinceOptions.find((p) => mainAddress.endsWith(p));
           if (foundProvince) {
@@ -125,7 +123,6 @@ export default function CreateApplication() {
           }
         }
 
-        // Chỉ set những field mà form chưa có giá trị (ưu tiên draft)
         const currentValues = form.getFieldsValue(true);
         const profileFields: any = {};
 
@@ -158,7 +155,6 @@ export default function CreateApplication() {
 
   useEffect(() => {
     const initForm = async () => {
-      // 1. Khôi phục draft trước (nếu có)
       const draft = getApplicationDraft();
       if (draft) {
         form.setFieldsValue(draft);
@@ -168,7 +164,6 @@ export default function CreateApplication() {
         message.info('Đã khôi phục dữ liệu hồ sơ nháp trước đó.');
       }
 
-      // 2. LUÔN gọi API Profile để bổ sung thông tin cá nhân
       await loadProfile();
     };
     initForm();
@@ -230,7 +225,6 @@ export default function CreateApplication() {
     if (!fileList) return '';
     
     const getValidUrl = (file: any) => {
-      // Ưu tiên phản hồi chính thức từ backend
       const url = file.response?.fileUrl || 
                   file.response?.data?.fileUrl || 
                   file.response?.url || 
@@ -270,7 +264,6 @@ export default function CreateApplication() {
       await form.validateFields();
       const submitValues = form.getFieldsValue(true);
 
-      // Tự động đồng bộ thông tin cá nhân của thí sinh lên database profile
       try {
         const profilePayload = {
           fullName: submitValues.fullName,

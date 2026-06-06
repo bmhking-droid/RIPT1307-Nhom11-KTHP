@@ -15,7 +15,6 @@ const authenticate = async (req, res, next) => {
 
     const decoded = jwt.verify(token, jwtConfig.secret);
 
-    // Kiểm tra trạng thái hoạt động thực tế của người dùng trong cơ sở dữ liệu
     const user = await User.findByPk(decoded.id);
     if (!user) {
       return errorResponse(res, "Tài khoản không tồn tại hoặc đã bị xóa", 401);

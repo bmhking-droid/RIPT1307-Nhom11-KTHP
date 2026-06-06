@@ -29,7 +29,6 @@ export default function LoginPage() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  // 1. Xử lý khi form hợp lệ và gửi API
   const onFinish = async (values: any) => {
     try {
       const res = await login(values);
@@ -71,12 +70,10 @@ export default function LoginPage() {
     }
   };
 
-  // 2. Xử lý khi form chưa hợp lệ
   const onFinishFailed = () => {
     message.error('Form nhập liệu chưa hợp lệ. Vui lòng kiểm tra lại các ô báo đỏ!');
   };
 
-  // 3. Xử lý gửi mã OTP khôi phục mật khẩu
   const handleRequestOtp = async () => {
     const emailStr = forgotEmail.trim();
     if (!emailStr) {
@@ -94,7 +91,7 @@ export default function LoginPage() {
       if (res && res.success) {
         message.success('Mã OTP khôi phục mật khẩu đã được gửi đến email của bạn!');
         setStep(2);
-        setCooldown(60); // Đặt cooldown 60 giây chờ gửi lại
+        setCooldown(60); 
       } else {
         message.error(res?.message || 'Gửi mã OTP thất bại!');
       }
@@ -105,7 +102,6 @@ export default function LoginPage() {
     }
   };
 
-  // 4. Xử lý đặt lại mật khẩu mới
   const handleResetPassword = async () => {
     const emailStr = forgotEmail.trim();
     const otpStr = otpCode.trim();
@@ -135,7 +131,7 @@ export default function LoginPage() {
       if (res && res.success) {
         message.success('Đặt lại mật khẩu thành công! Vui lòng đăng nhập.');
         setIsModalOpen(false);
-        // Clear state
+        
         setForgotEmail('');
         setOtpCode('');
         setNewPassword('');

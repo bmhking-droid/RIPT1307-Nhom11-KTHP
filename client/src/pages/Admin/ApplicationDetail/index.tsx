@@ -21,7 +21,6 @@ import {
 import { getFileUrl } from '@/services/request';
 
 export default function ApplicationDetailPage() {
-  // Lấy ID dạng String/UUID từ URL
   const params = useParams<{ id: string }>();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -83,7 +82,6 @@ export default function ApplicationDetailPage() {
       return;
     }
 
-    // Kết hợp các lý do đã chọn
     const reasonsToSave = selectedReasons
       .filter(r => r !== 'other')
       .concat(hasOther ? [`Lý do khác: ${customReason.trim()}`] : []);

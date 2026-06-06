@@ -2,7 +2,6 @@ const { errorResponse } = require("../utils/response");
 const https = require("https");
 const { URL } = require("url");
 
-// Helper function to download files using native https module, supporting redirects
 const downloadFromUrl = (url, maxRedirects = 5) => {
   return new Promise((resolve, reject) => {
     const requestUrl = (targetUrl, redirectCount) => {
@@ -11,7 +10,6 @@ const downloadFromUrl = (url, maxRedirects = 5) => {
       }
 
       https.get(targetUrl, (response) => {
-        // Handle HTTP redirects (301, 302, 307, 308)
         if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
           let nextUrl = response.headers.location;
           if (!nextUrl.startsWith("http")) {
@@ -48,7 +46,6 @@ const downloadFromUrl = (url, maxRedirects = 5) => {
 const notFound = async (req, res, next) => {
   const url = req.originalUrl || "";
   
-  // Nếu là file tĩnh trong thư mục /uploads nhưng không tìm thấy thực tế trên server
   if (url.startsWith("/uploads/")) {
     try {
       const parts = url.split("/");
@@ -63,11 +60,9 @@ const notFound = async (req, res, next) => {
         contentType = "image/jpeg";
       }
 
-      // Kiểm tra xem có phải tên file dạng timestamp (local/mock) hay không
       const isLocalFormat = filename.includes("-") && /\d{10,}/.test(filename);
       const isMockFormat = filename.includes("nguyenvana") || filename.includes("lethib") || filename.includes("tranvanc");
 
-      // Nếu không phải file mock/local cũ, tiến hành proxy từ đám mây vĩnh viễn Catbox.moe
       if (!isLocalFormat && !isMockFormat) {
         const catboxUrl = `https://files.catbox.moe/${filename}`;
         console.log(`🔄 [STATIC PROXY] Đang tải file gốc từ đám mây vĩnh viễn để stream về Client: ${catboxUrl}`);
@@ -88,7 +83,6 @@ const notFound = async (req, res, next) => {
         }
       }
 
-      // Fallback sang placeholder thông minh nếu không tìm thấy trên Catbox hoặc là tệp cục bộ cũ/giả lập
       if (url.endsWith(".pdf")) {
         fallbackUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
         contentType = "application/pdf";

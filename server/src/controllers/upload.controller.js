@@ -45,7 +45,6 @@ function uploadToCatbox(boundary, body) {
 function buildMultipartBody(boundary, fields, fileField) {
   const parts = [];
   
-  // Các trường text thông thường
   for (const [key, value] of Object.entries(fields)) {
     parts.push(Buffer.from(
       `--${boundary}\r\n` +
@@ -54,7 +53,6 @@ function buildMultipartBody(boundary, fields, fileField) {
     ));
   }
   
-  // Trường file nhị phân
   parts.push(Buffer.from(
     `--${boundary}\r\n` +
     `Content-Disposition: form-data; name="${fileField.name}"; filename="${fileField.filename}"\r\n` +
@@ -63,7 +61,6 @@ function buildMultipartBody(boundary, fields, fileField) {
   parts.push(fileField.buffer);
   parts.push(Buffer.from(`\r\n`));
   
-  // Biên kết thúc
   parts.push(Buffer.from(`--${boundary}--\r\n`));
   
   return Buffer.concat(parts);
@@ -76,20 +73,17 @@ class UploadController {
         return errorResponse(res, "Không có file được upload", 400);
       }
 
-      // 1. Đường dẫn lưu cục bộ mặc định ban đầu
       const relativePath = req.file.path
         .replace(/\\/g, "/")
         .split("/uploads/")[1];
-      const folderName = relativePath.split("/")[0]; // e.g. "cccd", "hoc-ba", "avatar"
+      const folderName = relativePath.split("/")[0]; 
       let fileUrl = `/uploads/${relativePath}`;
 
-      // 2. Tự động tải lên đám mây lưu trữ vĩnh viễn Catbox.moe qua HTTPS để vượt qua ổ cứng tạm thời của Render
       try {
         console.log(`☁️ [CATBOX UPLOAD] Đang chuẩn bị đẩy file lên đám mây vĩnh viễn: ${req.file.originalname}`);
         const boundary = "----CatboxBoundary" + Math.random().toString(36).substring(2);
         const fileBuffer = fs.readFileSync(req.file.path);
         
-        // Làm sạch tên file trước khi tải lên để tránh lỗi header
         const originalExtension = path.extname(req.file.originalname);
         const originalBase = path.basename(req.file.originalname, originalExtension);
         const cleanBase = originalBase
@@ -116,16 +110,12 @@ class UploadController {
         if (catboxUrl && catboxUrl.startsWith("http")) {
           console.log(`✅ [CATBOX SUCCESS] Đã tải lên thành công: ${catboxUrl}`);
           
-          // Trích xuất tên file duy nhất từ Catbox (ví dụ: "0qimb4.png")
           const catboxFilename = catboxUrl.split("/").pop();
           
-          // Đường dẫn lưu mới cục bộ khớp với Catbox ID
           const newLocalPath = path.join(path.dirname(req.file.path), catboxFilename);
           
-          // Đổi tên file cục bộ trên đĩa để đồng bộ hoàn toàn
           fs.renameSync(req.file.path, newLocalPath);
           
-          // Gán lại fileUrl thành dạng đường dẫn tương đối đi qua Proxy bảo mật của backend
           fileUrl = `/uploads/${folderName}/${catboxFilename}`;
           console.log(`🔄 [SYNC SUCCESS] Đã đổi tên file cục bộ thành: ${catboxFilename}. URL lưu database: ${fileUrl}`);
         } else {
