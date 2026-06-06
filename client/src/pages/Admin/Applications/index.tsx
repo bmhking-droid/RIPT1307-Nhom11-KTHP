@@ -16,6 +16,7 @@ import {
   getUniversities,
 } from '@/services/admin';
 import moment from 'moment'; 
+import { DownloadOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -89,6 +90,43 @@ export default function ApplicationsPage() {
 
     setFilters(nextFilters);
     fetchApplications(nextFilters);
+  };
+
+  const exportExcel = async () => {
+    setLoading(true);
+    try {
+      const baseUrl = process.env.UMI_APP_API_URL || 'http://localhost:5000/api';
+      const queryParams = new URLSearchParams();
+      Object.keys(filters).forEach((key) => {
+        if (filters[key] !== undefined) {
+          queryParams.append(key, filters[key]);
+        }
+      });
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${baseUrl}/applications/export?${queryParams.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể xuất báo cáo');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Danh_sach_xet_tuyen_${Date.now()}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      console.error('Lỗi xuất báo cáo:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderStatus = (status: string) => {
@@ -210,6 +248,16 @@ export default function ApplicationsPage() {
           onChange={(value) => handleFilterChange('status', value)}
           options={statusOptions}
         />
+
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={exportExcel}
+          loading={loading}
+          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+        >
+          Xuất Excel
+        </Button>
       </Space>
 
       <Table 

@@ -73,20 +73,31 @@ exports.findAll = async (filters = {}) => {
     }
   }
 
+  const include = [
+    { model: University },
+    { model: Major },
+    { model: AdmissionRound },
+    { model: AdmissionCombination },
+    { model: User, include: [{ model: Profile, as: "profile" }] },
+    { model: ApplicationDocument, as: "documents" },
+    { model: ApplicationStatusHistory, as: "statusHistories" }
+  ];
+
+  if (filters.isExport) {
+    return await Application.findAll({
+      where,
+      include,
+      order: [["submittedAt", "DESC"]],
+    });
+  }
+
   const page = Number(filters.page) || 1;
   const limit = Number(filters.limit) || 20;
   const offset = (page - 1) * limit;
 
   return await Application.findAndCountAll({
     where,
-    include: [
-      { model: University },
-      { model: Major },
-      { model: AdmissionRound },
-      { model: AdmissionCombination },
-      { model: User, include: [{ model: Profile, as: "profile" }] },
-      { model: ApplicationStatusHistory, as: "statusHistories" }
-    ],
+    include,
     order: [["submittedAt", "DESC"]],
     limit,
     offset,

@@ -32,6 +32,13 @@ router.get(
 router.get("/public/lookup", controller.publicLookup);
 
 router.get(
+  "/export",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  controller.exportExcel,
+);
+
+router.get(
   "/:id",
   authMiddleware,
   roleMiddleware("CANDIDATE", "ADMIN"),

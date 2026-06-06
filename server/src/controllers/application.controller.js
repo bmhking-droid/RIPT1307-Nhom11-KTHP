@@ -91,3 +91,23 @@ exports.publicLookup = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.exportExcel = async (req, res, next) => {
+  try {
+    const workbook = await applicationService.exportExcel(req.query);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Danh_sach_xet_tuyen_${Date.now()}.xlsx`
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    next(error);
+  }
+};

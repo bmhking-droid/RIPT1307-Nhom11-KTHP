@@ -181,3 +181,122 @@ exports.publicLookup = async (searchKey) => {
   
   return await exports.getMyApplications(user.id);
 };
+
+exports.exportExcel = async (filters) => {
+  const ExcelJS = require("exceljs");
+  const applications = await repository.findAll({ ...filters, isExport: true });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Danh sách xét tuyển");
+
+  worksheet.columns = [
+    { header: "Mã hồ sơ", key: "id", width: 25 },
+    { header: "Họ và tên", key: "fullName", width: 25 },
+    { header: "CCCD", key: "cccd", width: 15 },
+    { header: "Ngày sinh", key: "dateOfBirth", width: 15 },
+    { header: "Giới tính", key: "gender", width: 12 },
+    { header: "Email", key: "email", width: 25 },
+    { header: "Số điện thoại", key: "phone", width: 15 },
+    { header: "Tỉnh/Thành phố", key: "province", width: 20 },
+    { header: "Địa chỉ chi tiết", key: "address", width: 30 },
+    { header: "Trường xét tuyển", key: "university", width: 30 },
+    { header: "Ngành xét tuyển", key: "major", width: 25 },
+    { header: "Đợt tuyển sinh", key: "round", width: 25 },
+    { header: "Tổ hợp môn", key: "combination", width: 15 },
+    { header: "Điểm xét tuyển", key: "totalScore", width: 15 },
+    { header: "Trạng thái", key: "status", width: 15 },
+    { header: "Ngày nộp", key: "submittedAt", width: 20 },
+    { header: "Học bạ THPT", key: "docTranscript", width: 30 },
+    { header: "CCCD/CMND", key: "docCccd", width: 30 },
+    { header: "Chứng chỉ Tiếng Anh", key: "docEnglish", width: 30 },
+    { header: "Giấy ưu tiên", key: "docPriority", width: 30 },
+  ];
+
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { name: "Times New Roman", size: 12, bold: true, color: { argb: "FFFFFF" } };
+  headerRow.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "1677FF" },
+  };
+  headerRow.alignment = { vertical: "middle", horizontal: "center" };
+  headerRow.height = 30;
+
+  applications.forEach((app) => {
+    const user = app.User || {};
+    const profile = user.profile || {};
+
+    const docs = app.documents || [];
+    const getDocUrl = (type) => {
+      const doc = docs.find((d) => d.documentType === type);
+      if (!doc) return "";
+      // Nếu là đường dẫn tương đối, ghép thêm host API
+      if (doc.fileUrl && doc.fileUrl.startsWith("/")) {
+        return `${process.env.API_URL || "https://online-admission-api.onrender.com"}${doc.fileUrl}`;
+      }
+      return doc.fileUrl || "";
+    };
+
+    const transcriptUrl = getDocUrl("HOC_BA");
+    const cccdUrl = getDocUrl("CCCD");
+    const englishUrl = getDocUrl("CHUNG_CHI_TIENG_ANH");
+    const priorityUrl = getDocUrl("GIAY_UU_TIEN");
+
+    let statusText = "Đang chờ";
+    if (app.status === "approved") statusText = "Đã duyệt";
+    if (app.status === "rejected") statusText = "Yêu cầu cập nhật";
+
+    const rowData = {
+      id: app.id,
+      fullName: profile.fullName || "",
+      cccd: profile.cccd || "",
+      dateOfBirth: profile.dateOfBirth || "",
+      gender: profile.gender || "",
+      email: user.email || "",
+      phone: profile.phone || "",
+      province: profile.province || "",
+      address: profile.address || "",
+      university: app.University ? app.University.name : "",
+      major: app.Major ? app.Major.name : "",
+      round: app.AdmissionRound ? app.AdmissionRound.name : "",
+      combination: app.AdmissionCombination ? app.AdmissionCombination.name : "",
+      totalScore: app.totalScore ? Number(app.totalScore) : 0,
+      status: statusText,
+      submittedAt: app.submittedAt ? new Date(app.submittedAt).toLocaleDateString("vi-VN") : "",
+      docTranscript: transcriptUrl,
+      docCccd: cccdUrl,
+      docEnglish: englishUrl,
+      docPriority: priorityUrl,
+    };
+
+    const row = worksheet.addRow(rowData);
+
+    const statusCell = row.getCell("status");
+    if (app.status === "approved") {
+      statusCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "D9F7BE" } };
+      statusCell.font = { color: { argb: "389E0D" }, bold: true };
+    } else if (app.status === "rejected") {
+      statusCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF1F0" } };
+      statusCell.font = { color: { argb: "CF1322" }, bold: true };
+    } else {
+      statusCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFBE6" } };
+      statusCell.font = { color: { argb: "D46B08" }, bold: true };
+    }
+  });
+
+  worksheet.eachRow((row, rowNumber) => {
+    row.font = { name: "Times New Roman", size: 11 };
+    row.alignment = { vertical: "middle" };
+    
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: "thin", color: { argb: "E8E8E8" } },
+        left: { style: "thin", color: { argb: "E8E8E8" } },
+        bottom: { style: "thin", color: { argb: "E8E8E8" } },
+        right: { style: "thin", color: { argb: "E8E8E8" } },
+      };
+    });
+  });
+
+  return workbook;
+};
