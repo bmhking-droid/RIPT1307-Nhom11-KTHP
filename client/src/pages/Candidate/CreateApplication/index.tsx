@@ -407,12 +407,12 @@ export default function CreateApplication() {
             boxShadow: '0 10px 30px rgba(79, 70, 229, 0.03)'
           }}
         >
-          <div style={{ fontSize: 64, marginBottom: 16 }}>🔒</div>
+          <div style={{ fontSize: 64, marginBottom: 16 }}>🛠️</div>
           <h2 style={{ fontWeight: 700, fontSize: 24, color: '#111827', marginBottom: 12 }}>
-            Cổng nộp hồ sơ hiện đang đóng
+            HỆ THỐNG ĐANG BẢO TRÌ
           </h2>
           <p style={{ color: '#4B5563', fontSize: 16, maxWidth: 500, margin: '0 auto 24px' }}>
-            Hệ thống hiện đang tạm thời đóng nhận hồ sơ đăng ký xét tuyển trực tuyến theo cấu hình của Quản trị viên. Vui lòng quay lại sau hoặc liên hệ Phòng Tuyển sinh để được hướng dẫn chi tiết.
+            Hệ thống đang bảo trì, thắc mắc liên hệ qua Ban Tuyển sinh để được hỗ trợ.
           </p>
           <Button 
             type="primary" 

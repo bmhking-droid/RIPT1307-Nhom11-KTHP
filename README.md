@@ -89,7 +89,7 @@ Hệ thống được phát triển với kiến trúc tách biệt hoàn toàn 
 
 ## 🌐 Hướng Dẫn Triển Khai Lên Đám Mây (Production)
 
-Hệ thống đã được cấu hình tối ưu để triển khai lên Render (Backend) và Netlify (Frontend) hoàn toàn miễn phí. Để biết hướng dẫn thiết lập chi tiết từng bước, vui lòng đọc tài liệu hướng dẫn triển khai chính thức của chúng tôi tại:
+Hệ thống đã được cấu hình tối ưu để triển khai lên Render (Backend) và Netlify (Frontend) hoàn toàn miễn phí. Để biết hướng dẫn thiết lập chi tiết từng bước, vui lòng đọc tài liệu hướng dẫn triển khai chính thức của chúng tôi tại: https://sage-dasik-8f8327.netlify.app/
 
 👉 **[HƯỚNG DẪN TRIỂN KHAI (DEPLOYMENT.md)](./DEPLOYMENT.md)**
 
