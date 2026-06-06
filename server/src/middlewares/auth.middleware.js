@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const jwtConfig = require("../configs/jwt");
 const { errorResponse } = require("../utils/response");
+const { User } = require("../models");
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -13,6 +14,16 @@ const authenticate = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, jwtConfig.secret);
+
+    // Kiểm tra trạng thái hoạt động thực tế của người dùng trong cơ sở dữ liệu
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return errorResponse(res, "Tài khoản không tồn tại hoặc đã bị xóa", 401);
+    }
+    if (user.isActive === false || user.isActive === 0) {
+      return errorResponse(res, "Tài khoản của bạn đã bị khóa bởi quản trị viên", 401);
+    }
+
     req.user = decoded;
     next();
   } catch (error) {
