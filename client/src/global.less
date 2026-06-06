@@ -6,6 +6,38 @@ body,
   font-family: 'Times New Roman', Times, serif !important;
   background: #f5f7fa;
   color: #111827;
+  font-size: 15px !important; // Tăng cỡ chữ lên cho toàn hệ thống
+}
+
+// In hoa tất cả tiêu đề h1-h6, tiêu đề card, tiêu đề modal
+h1, h2, h3, h4, h5, h6,
+.ant-card-head-title,
+.ant-modal-title,
+[class*="blockTitle"] h3 {
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
+}
+
+// In hoa sidebar menu items (cho cả Admin và Candidate)
+.ant-menu-item,
+.ant-menu-submenu-title,
+.ant-menu-title-content {
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
+  font-weight: 700 !important;
+}
+
+// In hoa logo/brand và header/topbar titles
+[class*="brandTitle"],
+[class*="brandSub"],
+span[style*="UniAdmission"],
+span[style*="Portal"],
+[class*="headerTitle"],
+[class*="topbar"] strong,
+[class*="welcome"],
+[class*="adminInfo"] span {
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
 }
 
 // Force font-family for all elements to ensure Times New Roman is applied everywhere

@@ -17,6 +17,7 @@ import {
 } from '@/services/admin';
 import moment from 'moment'; 
 import { DownloadOutlined } from '@ant-design/icons';
+import request from '@/services/request';
 
 const { Search } = Input;
 
@@ -95,27 +96,12 @@ export default function ApplicationsPage() {
   const exportExcel = async () => {
     setLoading(true);
     try {
-      const baseUrl = process.env.UMI_APP_API_URL || 'http://localhost:5000/api';
-      const queryParams = new URLSearchParams();
-      Object.keys(filters).forEach((key) => {
-        if (filters[key] !== undefined) {
-          queryParams.append(key, filters[key]);
-        }
+      const blob = await request.get('/applications/export', {
+        params: filters,
+        responseType: 'blob',
       });
 
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${baseUrl}/applications/export?${queryParams.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Không thể xuất báo cáo');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob as any);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `Danh_sach_xet_tuyen_${Date.now()}.xlsx`);
