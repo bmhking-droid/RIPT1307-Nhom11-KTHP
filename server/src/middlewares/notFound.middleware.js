@@ -54,7 +54,7 @@ const notFound = async (req, res, next) => {
       const parts = url.split("/");
       const filename = parts[parts.length - 1].split("?")[0]; // e.g. "0qimb4.png"
       
-      let fallbackUrl = "https://placehold.co/600x800.png/e2e8f0/475569?text=Minh+Chung+Mau";
+      let fallbackUrl = "https://placehold.co/600x800/e2e8f0/475569.png?text=Minh+Chung+Mau";
       let contentType = "image/png";
       const lowercaseUrl = url.toLowerCase();
       if (lowercaseUrl.endsWith(".pdf")) {
@@ -93,22 +93,22 @@ const notFound = async (req, res, next) => {
         fallbackUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
         contentType = "application/pdf";
       } else if (url.includes("/avatar/")) {
-        fallbackUrl = "https://placehold.co/400x400.png/4f46e5/ffffff?text=AVATAR";
+        fallbackUrl = "https://placehold.co/400x400/4f46e5/ffffff.png?text=AVATAR";
         contentType = "image/png";
       } else if (url.includes("/cccd/")) {
-        fallbackUrl = "https://placehold.co/800x500.png/e2e8f0/475569?text=CCCD+CMND";
+        fallbackUrl = "https://placehold.co/800x500/e2e8f0/475569.png?text=CCCD+CMND";
         contentType = "image/png";
       } else if (url.includes("/hoc-ba/")) {
-        fallbackUrl = "https://placehold.co/600x800.png/e2e8f0/475569?text=Hoc+Ba+THPT";
+        fallbackUrl = "https://placehold.co/600x800/e2e8f0/475569.png?text=Hoc+Ba+THPT";
         contentType = "image/png";
       } else if (url.includes("/uu-tien/")) {
-        fallbackUrl = "https://placehold.co/600x800.png/e2e8f0/475569?text=Giay+Uu+Tien";
+        fallbackUrl = "https://placehold.co/600x800/e2e8f0/475569.png?text=Giay+Uu+Tien";
         contentType = "image/png";
       } else if (url.includes("/diem-thi/")) {
-        fallbackUrl = "https://placehold.co/600x800.png/e2e8f0/475569?text=Bang+Diem";
+        fallbackUrl = "https://placehold.co/600x800/e2e8f0/475569.png?text=Bang+Diem";
         contentType = "image/png";
       } else if (url.includes("/anh-3x4/")) {
-        fallbackUrl = "https://placehold.co/300x400.png/e2e8f0/475569?text=Anh+3x4";
+        fallbackUrl = "https://placehold.co/300x400/e2e8f0/475569.png?text=Anh+3x4";
         contentType = "image/png";
       }
 
