@@ -1,4 +1,49 @@
 const { errorResponse } = require("../utils/response");
+const https = require("https");
+const { URL } = require("url");
+
+// Helper function to download files using native https module, supporting redirects
+const downloadFromUrl = (url, maxRedirects = 5) => {
+  return new Promise((resolve, reject) => {
+    const requestUrl = (targetUrl, redirectCount) => {
+      if (redirectCount > maxRedirects) {
+        return reject(new Error("Too many redirects"));
+      }
+
+      https.get(targetUrl, (response) => {
+        // Handle HTTP redirects (301, 302, 307, 308)
+        if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+          let nextUrl = response.headers.location;
+          if (!nextUrl.startsWith("http")) {
+            const parsedUrl = new URL(targetUrl);
+            nextUrl = parsedUrl.protocol + "//" + parsedUrl.host + nextUrl;
+          }
+          return requestUrl(nextUrl, redirectCount + 1);
+        }
+
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          return reject(new Error(`Status ${response.statusCode}`));
+        }
+
+        const data = [];
+        response.on("data", (chunk) => {
+          data.push(chunk);
+        });
+        response.on("end", () => {
+          resolve({
+            ok: true,
+            status: response.statusCode,
+            buffer: async () => Buffer.concat(data)
+          });
+        });
+      }).on("error", (err) => {
+        reject(err);
+      });
+    };
+
+    requestUrl(url, 0);
+  });
+};
 
 const notFound = async (req, res, next) => {
   const url = req.originalUrl || "";
@@ -28,10 +73,9 @@ const notFound = async (req, res, next) => {
         console.log(`🔄 [STATIC PROXY] Đang tải file gốc từ đám mây vĩnh viễn để stream về Client: ${catboxUrl}`);
         
         try {
-          const response = await fetch(catboxUrl);
+          const response = await downloadFromUrl(catboxUrl);
           if (response.ok) {
-            const arrayBuffer = await response.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+            const buffer = await response.buffer();
             
             res.setHeader("Content-Type", contentType);
             res.setHeader("Cache-Control", "public, max-age=86400"); // Cache 1 ngày để tối ưu hiệu năng
@@ -70,10 +114,9 @@ const notFound = async (req, res, next) => {
 
       console.log(`🔄 [STATIC FALLBACK] Đang phục vụ ảnh placeholder tương ứng cho: ${url}`);
       
-      const response = await fetch(fallbackUrl);
+      const response = await downloadFromUrl(fallbackUrl);
       if (response.ok) {
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        const buffer = await response.buffer();
         
         res.setHeader("Content-Type", contentType);
         res.setHeader("Cache-Control", "public, max-age=86400");

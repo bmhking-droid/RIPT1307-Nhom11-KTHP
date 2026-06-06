@@ -1,6 +1,45 @@
 const path = require("path");
 const fs = require("fs");
+const https = require("https");
 const { successResponse, errorResponse } = require("../utils/response");
+
+// Hàm thực hiện POST HTTPS nhị phân lên Catbox.moe không phụ thuộc fetch
+function uploadToCatbox(boundary, body) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: "catbox.moe",
+      port: 443,
+      path: "/user/api.php",
+      method: "POST",
+      headers: {
+        "Content-Type": `multipart/form-data; boundary=${boundary}`,
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Content-Length": body.length
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+      res.on("end", () => {
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          status: res.statusCode,
+          text: async () => data
+        });
+      });
+    });
+
+    req.on("error", (err) => {
+      reject(err);
+    });
+
+    req.write(body);
+    req.end();
+  });
+}
 
 // Hàm xây dựng multipart/form-data thủ công không phụ thuộc thư viện bên ngoài (Zero-dependency)
 function buildMultipartBody(boundary, fields, fileField) {
@@ -61,14 +100,7 @@ class UploadController {
           }
         );
         
-        const response = await fetch("https://catbox.moe/user/api.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": `multipart/form-data; boundary=${boundary}`,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-          },
-          body: body
-        });
+        const response = await uploadToCatbox(boundary, body);
 
         if (response.ok) {
           const catboxUrl = (await response.text()).trim();

@@ -1,5 +1,5 @@
 const repository = require("../repositories/application.repository");
-const { sequelize, User, Profile, University, Major, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory } = require("../models");
+const { sequelize, User, Profile, University, Major, AdmissionRound, AdmissionCombination, ApplicationDocument, ApplicationStatusHistory, Application } = require("../models");
 const mailService = require("./mail.service");
 const { APPLICATION_STATUS } = require("../utils/constants");
 const { getSettings } = require("../utils/settings");
@@ -8,6 +8,20 @@ exports.createApplication = async (userId, payload) => {
   const settings = getSettings();
   if (!settings.allowCandidateSubmit) {
     throw new Error("Hệ thống hiện đang đóng, không nhận hồ sơ đăng ký xét tuyển!");
+  }
+
+  // Kiểm tra xem thí sinh đã nộp hồ sơ cho nguyện vọng này chưa (trùng Trường, Ngành, Đợt tuyển sinh)
+  const existingApp = await Application.findOne({
+    where: {
+      userId,
+      universityId: payload.universityId,
+      majorId: payload.majorId,
+      roundId: payload.roundId
+    }
+  });
+
+  if (existingApp) {
+    throw new Error("Bạn đã nộp hồ sơ xét tuyển cho ngành này ở đợt tuyển sinh hiện tại rồi!");
   }
 
   const transaction = await sequelize.transaction();
