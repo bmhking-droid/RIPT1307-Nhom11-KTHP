@@ -34,6 +34,20 @@ export default function SettingsPage() {
     }
   };
 
+  const handleToggle = async (key: string, checked: boolean) => {
+    try {
+      const currentValues = form.getFieldsValue();
+      const newValues = { ...currentValues, [key]: checked };
+      const res: any = await request.put('/settings', newValues);
+      if (res && res.success) {
+        message.success('Đã lưu cấu hình hệ thống thành công');
+        form.setFieldsValue(newValues);
+      }
+    } catch {
+      message.error('Không thể lưu cấu hình hệ thống');
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ padding: 24, textAlign: 'center' }}>
@@ -62,7 +76,7 @@ export default function SettingsPage() {
           label="Cho phép thí sinh nộp hồ sơ"
           valuePropName="checked"
         >
-          <Switch />
+          <Switch onChange={(checked) => handleToggle('allowCandidateSubmit', checked)} />
         </Form.Item>
 
         <Form.Item
@@ -70,7 +84,7 @@ export default function SettingsPage() {
           label="Tự động gửi email khi hồ sơ đổi trạng thái"
           valuePropName="checked"
         >
-          <Switch />
+          <Switch onChange={(checked) => handleToggle('autoSendEmail', checked)} />
         </Form.Item>
 
         <Form.Item name="emailSenderName" label="Tên người gửi email">
