@@ -6,6 +6,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const roleMiddleware = require("../middlewares/role.middleware");
 
 router.get("/", (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   const data = getSettings();
   return successResponse(res, data, "Lấy cấu hình thành công");
 });

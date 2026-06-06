@@ -8,7 +8,7 @@ export default function SettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res: any = await request.get('/settings');
+      const res: any = await request.get('/settings', { params: { _t: Date.now() } });
       if (res && res.success && res.data) {
         form.setFieldsValue(res.data);
       }
@@ -28,20 +28,6 @@ export default function SettingsPage() {
       const res: any = await request.put('/settings', values);
       if (res && res.success) {
         message.success('Đã lưu cấu hình hệ thống');
-      }
-    } catch {
-      message.error('Không thể lưu cấu hình hệ thống');
-    }
-  };
-
-  const handleToggle = async (key: string, checked: boolean) => {
-    try {
-      const currentValues = form.getFieldsValue();
-      const newValues = { ...currentValues, [key]: checked };
-      const res: any = await request.put('/settings', newValues);
-      if (res && res.success) {
-        message.success('Đã lưu cấu hình hệ thống thành công');
-        form.setFieldsValue(newValues);
       }
     } catch {
       message.error('Không thể lưu cấu hình hệ thống');
@@ -76,7 +62,7 @@ export default function SettingsPage() {
           label="Cho phép thí sinh nộp hồ sơ"
           valuePropName="checked"
         >
-          <Switch onChange={(checked) => handleToggle('allowCandidateSubmit', checked)} />
+          <Switch />
         </Form.Item>
 
         <Form.Item
@@ -84,7 +70,7 @@ export default function SettingsPage() {
           label="Tự động gửi email khi hồ sơ đổi trạng thái"
           valuePropName="checked"
         >
-          <Switch onChange={(checked) => handleToggle('autoSendEmail', checked)} />
+          <Switch />
         </Form.Item>
 
         <Form.Item name="emailSenderName" label="Tên người gửi email">
